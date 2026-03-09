@@ -185,6 +185,7 @@
 }
 .rl-item { display:flex; align-items:center; gap:6px; }
 .rl-sep  { color:rgba(255,45,85,0.3); }
+.connection {
   max-width:1100px; margin:0 auto;
   padding:40px 20px;
   display:flex; align-items:center; gap:16px;
@@ -221,20 +222,26 @@
 
 /* ROUTE STATS */
 .route-stats {
-  display:flex; gap:1px; margin-top:32px;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:1px; margin-top:32px;
   border:1px solid var(--border); overflow:hidden;
 }
+@media(max-width:500px){
+  .route-stats { grid-template-columns:repeat(2,1fr); }
+}
 .route-stat {
-  flex:1; padding:20px 12px; text-align:center;
+  padding:18px 10px; text-align:center;
   background:rgba(255,255,255,0.02);
 }
 .route-stat-num {
-  font-family:'Playfair Display',serif; font-size:28px;
+  font-family:'Playfair Display',serif; font-size:clamp(20px,4vw,28px);
   font-weight:900; color:var(--cream); display:block;
 }
 .route-stat-label {
-  font-size:9px; letter-spacing:3px; color:var(--dim);
+  font-size:9px; letter-spacing:2px; color:var(--dim);
   text-transform:uppercase; margin-top:4px; display:block;
+  word-break:break-word;
 }
 /* ── EASTER EGG SECTION ── */
 .egg-section { padding:0 20px 80px; max-width:760px; margin:0 auto; position:relative; z-index:1; }
