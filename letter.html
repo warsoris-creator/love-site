@@ -3,46 +3,385 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Письмо ✦ для Вари</title>
+<title>Музыка ✦ for varya</title>
 <link rel="stylesheet" href="shared.css">
 <style>
-.coming-soon { gap:28px; }
-.coming-icon { animation:float 3s ease-in-out infinite; }
-@keyframes float { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-12px);} }
-.coming-num { font-size:10px; letter-spacing:5px; color:rgba(255,45,85,0.4); text-transform:uppercase; }
-.coming-back {
-  margin-top:20px; font-size:11px; letter-spacing:3px; color:var(--dim);
-  text-transform:uppercase; text-decoration:none;
-  border:1px solid var(--border); padding:12px 28px;
-  transition:all 0.2s; display:inline-block;
+
+body { overflow-x:hidden; }
+
+.player-glow {
+  position:fixed; inset:0; pointer-events:none; z-index:0;
+  background:radial-gradient(ellipse 55% 55% at 50% 52%, rgba(255,45,85,0.07), transparent 70%);
 }
-.coming-back:hover { border-color:var(--red); color:var(--cream); }
+.player-glow.playing { animation:glowPulse 2.4s ease-in-out infinite; }
+@keyframes glowPulse {
+  0%,100%{ background:radial-gradient(ellipse 55% 55% at 50% 52%, rgba(255,45,85,0.07), transparent 70%); }
+  50%    { background:radial-gradient(ellipse 65% 65% at 50% 52%, rgba(255,45,85,0.15), transparent 70%); }
+}
+
+.music-page {
+  min-height:100vh; display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  padding:90px 20px 70px; position:relative; z-index:1;
+}
+
+.music-eyebrow {
+  font-size:9px; letter-spacing:7px; color:rgba(255,45,85,0.4);
+  text-transform:uppercase; text-align:center; margin-bottom:14px;
+  opacity:0; animation:fadeUp 0.7s ease 0.2s forwards;
+}
+.music-title {
+  font-family:'Playfair Display',serif; font-style:italic;
+  font-size:clamp(26px,5.5vw,50px); font-weight:400;
+  color:var(--cream); text-align:center; line-height:1.3; margin-bottom:6px;
+  opacity:0; animation:fadeUp 0.7s ease 0.4s forwards;
+}
+.music-title span { color:var(--red); }
+.music-sub {
+  font-size:10px; letter-spacing:4px; color:rgba(255,240,245,0.25);
+  text-transform:uppercase; text-align:center; margin-bottom:48px;
+  opacity:0; animation:fadeUp 0.7s ease 0.55s forwards;
+}
+
+/* ── VINYL ── */
+.vinyl-wrap {
+  position:relative; margin-bottom:40px;
+  opacity:0; animation:fadeUp 0.7s ease 0.7s forwards;
+}
+.vinyl {
+  width:clamp(170px,40vw,230px); height:clamp(170px,40vw,230px);
+  border-radius:50%; cursor:pointer;
+  background:conic-gradient(
+    #130008 0deg, #1c000f 30deg, #0d0007 60deg, #1c000f 90deg,
+    #130008 120deg, #1c000f 150deg, #0d0007 180deg, #1c000f 210deg,
+    #130008 240deg, #1c000f 270deg, #0d0007 300deg, #1c000f 330deg, #130008 360deg
+  );
+  box-shadow:0 0 0 3px rgba(255,45,85,0.12), 0 0 50px rgba(255,45,85,0.07), inset 0 0 30px rgba(0,0,0,0.7);
+  transition:box-shadow 0.6s; position:relative;
+}
+.vinyl.spinning {
+  animation:spin 3s linear infinite;
+  box-shadow:0 0 0 3px rgba(255,45,85,0.38), 0 0 70px rgba(255,45,85,0.18), inset 0 0 30px rgba(0,0,0,0.7);
+}
+@keyframes spin { to{transform:rotate(360deg);} }
+
+.vinyl::before {
+  content:''; position:absolute; inset:8%; border-radius:50%;
+  background:repeating-radial-gradient(circle at 50%,
+    transparent 0, transparent 6px,
+    rgba(255,45,85,0.035) 6px, rgba(255,45,85,0.035) 7px);
+}
+.vinyl-label {
+  position:absolute; top:50%; left:50%;
+  transform:translate(-50%,-50%);
+  width:34%; height:34%; border-radius:50%;
+  background:linear-gradient(135deg,#2a0018,#150010);
+  border:1px solid rgba(255,45,85,0.28);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
+  pointer-events:none;
+}
+.vl-text { font-size:clamp(5px,1vw,6px); letter-spacing:2px; color:rgba(255,240,245,0.38); text-transform:uppercase; }
+.vl-dot { width:5px; height:5px; border-radius:50%; background:rgba(255,45,85,0.55); }
+
+.vinyl-needle {
+  position:absolute; top:-6px; right:-14px;
+  width:2px; height:55px;
+  background:linear-gradient(to bottom,rgba(255,240,245,0.55),rgba(255,240,245,0.08));
+  transform-origin:top center; transform:rotate(30deg);
+  transition:transform 0.8s cubic-bezier(0.4,0,0.2,1); border-radius:0 0 2px 2px;
+}
+.vinyl-needle::after {
+  content:''; position:absolute; bottom:-4px; left:50%;
+  transform:translateX(-50%);
+  width:7px; height:7px; border-radius:50%; background:rgba(255,45,85,0.65);
+}
+.vinyl-wrap.playing .vinyl-needle { transform:rotate(18deg); }
+
+.vinyl-ripple {
+  position:absolute; inset:0; border-radius:50%;
+  border:1px solid rgba(255,45,85,0.28);
+  animation:rippleOut 1.3s ease-out infinite; pointer-events:none; opacity:0;
+}
+.vinyl-wrap.playing .vinyl-ripple { opacity:1; }
+@keyframes rippleOut { 0%{transform:scale(1);opacity:0.5;} 100%{transform:scale(1.4);opacity:0;} }
+
+/* ── TRACK INFO ── */
+.track-info {
+  text-align:center; margin-bottom:24px;
+  opacity:0; animation:fadeUp 0.7s ease 0.85s forwards;
+}
+.track-name { font-family:'Playfair Display',serif; font-size:clamp(17px,3.5vw,24px); color:var(--cream); font-weight:900; }
+.track-artist { font-size:10px; letter-spacing:3px; color:rgba(255,240,245,0.32); text-transform:uppercase; margin-top:4px; }
+
+/* ── VISUALISER ── */
+.viz-wrap {
+  display:flex; align-items:flex-end; gap:3px; height:28px; margin-bottom:22px;
+  opacity:0; animation:fadeUp 0.7s ease 1.0s forwards;
+}
+.viz-bar {
+  width:3px; border-radius:2px; background:rgba(255,45,85,0.3);
+  transform:scaleY(0.15); transform-origin:bottom;
+  transition:transform 0.15s ease;
+}
+.viz-wrap.active .viz-bar { animation:barB var(--d,0.6s) ease-in-out infinite alternate; }
+@keyframes barB { from{transform:scaleY(0.12);} to{transform:scaleY(1);} }
+
+/* ── PROGRESS ── */
+.progress-wrap {
+  width:min(360px,84vw); margin-bottom:20px;
+  opacity:0; animation:fadeUp 0.7s ease 0.95s forwards;
+}
+.progress-bar { width:100%; height:2px; background:rgba(255,45,85,0.14); border-radius:2px; position:relative; cursor:pointer; }
+.progress-fill { height:100%; background:linear-gradient(to right,#ff2d55,#ff6b9d); border-radius:2px; width:0%; transition:width 0.25s; }
+.progress-thumb {
+  position:absolute; top:50%; right:0; width:9px; height:9px; border-radius:50%;
+  background:#ff2d55; transform:translate(50%,-50%); box-shadow:0 0 7px rgba(255,45,85,0.6);
+  transition:transform 0.2s;
+}
+.progress-bar:hover .progress-thumb { transform:translate(50%,-50%) scale(1.5); }
+.progress-times { display:flex; justify-content:space-between; font-size:9px; color:rgba(255,240,245,0.18); margin-top:5px; }
+
+/* ── CONTROLS ── */
+.controls {
+  display:flex; align-items:center; gap:22px; margin-bottom:40px;
+  opacity:0; animation:fadeUp 0.7s ease 1.05s forwards;
+}
+.ctrl-btn { background:none; border:none; cursor:pointer; color:rgba(255,240,245,0.3); font-size:18px; padding:8px; transition:color 0.2s,transform 0.2s; touch-action:manipulation; }
+.ctrl-btn:hover { color:var(--cream); transform:scale(1.18); }
+.ctrl-play {
+  width:54px; height:54px; border-radius:50%; border:1px solid rgba(255,45,85,0.38);
+  background:rgba(255,45,85,0.07); display:flex; align-items:center; justify-content:center;
+  color:var(--cream); font-size:20px; cursor:pointer; transition:all 0.25s;
+  box-shadow:0 0 18px rgba(255,45,85,0.1); touch-action:manipulation;
+}
+.ctrl-play:hover { border-color:rgba(255,45,85,0.75); box-shadow:0 0 28px rgba(255,45,85,0.22); transform:scale(1.06); }
+.ctrl-play.playing { background:rgba(255,45,85,0.14); border-color:rgba(255,45,85,0.65); }
+
+/* ── NO FILE ── */
+
+
+
+/* ── SPOTIFY ── */
+.sp-divider { display:flex; align-items:center; gap:14px; width:min(380px,86vw); margin:0 auto 24px; }
+.sp-line { flex:1; height:1px; background:linear-gradient(to right,transparent,rgba(30,215,96,0.15),transparent); }
+.sp-text { font-size:9px; letter-spacing:4px; color:rgba(255,240,245,0.18); text-transform:uppercase; white-space:nowrap; }
+
+.spotify-card {
+  display:flex; align-items:center; gap:14px; padding:15px 18px; text-decoration:none;
+  border:1px solid rgba(30,215,96,0.16); background:rgba(30,215,96,0.035);
+  width:min(380px,86vw); transition:all 0.28s; position:relative; overflow:hidden;
+  opacity:0; animation:fadeUp 0.7s ease 1.2s forwards;
+}
+.spotify-card::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(30,215,96,0.06),transparent); opacity:0; transition:opacity 0.28s; }
+.spotify-card:hover { border-color:rgba(30,215,96,0.45); transform:translateY(-3px); box-shadow:0 10px 32px rgba(30,215,96,0.09); }
+.spotify-card:hover::before { opacity:1; }
+.sp-icon { font-size:30px; flex-shrink:0; transition:transform 0.3s; }
+.spotify-card:hover .sp-icon { transform:scale(1.15) rotate(-6deg); }
+.sp-body { flex:1; }
+.sp-title { font-family:'Playfair Display',serif; font-size:15px; font-weight:900; color:var(--cream); }
+.sp-desc { font-size:10px; color:rgba(255,240,245,0.28); margin-top:2px; }
+.sp-arrow { font-size:15px; color:rgba(30,215,96,0.38); transition:transform 0.3s,color 0.3s; }
+.spotify-card:hover .sp-arrow { transform:translateX(4px); color:rgba(30,215,96,0.85); }
+
+.music-quote {
+  margin-top:48px; text-align:center; max-width:380px;
+  opacity:0; animation:fadeUp 0.7s ease 1.35s forwards;
+}
+.music-quote q { font-family:'Playfair Display',serif; font-style:italic; font-size:clamp(12px,2.2vw,15px); color:rgba(255,240,245,0.2); line-height:1.9; }
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(14px);} to{opacity:1;transform:translateY(0);} }
 </style>
 </head>
 <body>
+
 <canvas id="stars-canvas"></canvas>
+<div class="player-glow" id="playerGlow"></div>
+
 <nav class="site-nav">
   <a href="index.html" class="nav-logo">for varya ✦</a>
-  <div class="nav-links">
-    <a href="index.html" class="nav-link">Главная</a>
-    <a href="valentine.html" class="nav-link">Валентинка</a>
-    <a href="map.html" class="nav-link">Карта</a>
-    <a href="timeline.html" class="nav-link">История</a>
-    <a href="gallery.html" class="nav-link">Галерея</a>
-    <a href="letter.html" class="nav-link active">Письмо</a>
-  </div>
+  <div class="nav-links"></div>
 </nav>
-<div class="page-content">
-  <div class="coming-soon">
-    <div class="coming-num">05 · раздел</div>
-    <div class="coming-icon">✉️</div>
-    <h1 class="coming-title">Письмо</h1>
-    <p style="font-family:'Playfair Display',serif;font-style:italic;color:var(--dim);font-size:clamp(14px,2.5vw,18px);text-align:center;max-width:400px;line-height:1.7;">То, что сложно сказать вслух — написано здесь</p>
-    <div class="coming-hint">✦ &nbsp;письмо уже пишется&nbsp; ✦</div>
-    <div class="coming-dot"></div>
-    <a href="index.html" class="coming-back">← на главную</a>
+
+<audio id="audioEl" preload="auto" src="sound1.mp3"></audio>
+
+
+<div class="music-page">
+
+  <div class="music-eyebrow">✦ музыка нас связала ✦</div>
+  <h1 class="music-title">I Love You So <span>❤</span></h1>
+  <p class="music-sub">The Walters · наша песня</p>
+
+  <div class="vinyl-wrap" id="vinylWrap" onclick="togglePlay()">
+    <div class="vinyl" id="vinyl">
+      <div class="vinyl-label">
+        <div class="vl-text">FOR</div>
+        <div class="vl-dot"></div>
+        <div class="vl-text">VARYA</div>
+      </div>
+    </div>
+    <div class="vinyl-needle"></div>
+    <div class="vinyl-ripple"></div>
   </div>
-</div>
+
+  <div class="track-info">
+    <div class="track-name">I Love You So</div>
+    <div class="track-artist">The Walters</div>
+  </div>
+
+  <div class="viz-wrap" id="vizWrap">
+    <div class="viz-bar" style="--d:0.55s;height:60%"></div>
+    <div class="viz-bar" style="--d:0.40s;height:100%"></div>
+    <div class="viz-bar" style="--d:0.70s;height:40%"></div>
+    <div class="viz-bar" style="--d:0.50s;height:85%"></div>
+    <div class="viz-bar" style="--d:0.65s;height:55%"></div>
+    <div class="viz-bar" style="--d:0.45s;height:95%"></div>
+    <div class="viz-bar" style="--d:0.60s;height:30%"></div>
+    <div class="viz-bar" style="--d:0.75s;height:70%"></div>
+    <div class="viz-bar" style="--d:0.48s;height:100%"></div>
+    <div class="viz-bar" style="--d:0.58s;height:50%"></div>
+    <div class="viz-bar" style="--d:0.42s;height:80%"></div>
+    <div class="viz-bar" style="--d:0.68s;height:35%"></div>
+    <div class="viz-bar" style="--d:0.52s;height:90%"></div>
+    <div class="viz-bar" style="--d:0.38s;height:65%"></div>
+    <div class="viz-bar" style="--d:0.72s;height:45%"></div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-bar" id="progressBar" onclick="seekTo(event)">
+      <div class="progress-fill" id="progressFill"></div>
+      <div class="progress-thumb"></div>
+    </div>
+    <div class="progress-times">
+      <span id="timeElapsed">0:00</span>
+      <span id="timeDuration">—:——</span>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="ctrl-btn" onclick="rewind()" title="−15 сек">⟨⟨</button>
+    <button class="ctrl-play" id="playBtn" onclick="togglePlay()">▶</button>
+    <button class="ctrl-btn" onclick="forward()" title="+15 сек">⟩⟩</button>
+  </div>
+
+  <div class="sp-divider">
+    <div class="sp-line"></div>
+    <span class="sp-text">наш плейлист</span>
+    <div class="sp-line"></div>
+  </div>
+
+  <a class="spotify-card" href="https://open.spotify.com/playlist/37i9dQZF1EJtF0gpF4yFbA?si=Cd0F9APASxCO_WQTfxYisQ&pi=xTy1P4MiS86L0" target="_blank" data-external="true" id="spotifyCard">
+    <div class="sp-icon">🎵</div>
+    <div class="sp-body">
+      <div class="sp-title">Наш плейлист</div>
+      <div class="sp-desc">открыть в Spotify</div>
+    </div>
+    <div class="sp-arrow">→</div>
+  </a>
+
+  <div class="music-quote">
+    <q>Музыка — это то, что остаётся,<br>когда слова заканчиваются.</q>
+  </div>
+
+</div><!-- /music-page -->
+
 <script src="shared.js"></script>
+<script>
+const audio     = document.getElementById('audioEl');
+const vinyl     = document.getElementById('vinyl');
+const vinylWrap = document.getElementById('vinylWrap');
+const playBtn   = document.getElementById('playBtn');
+const vizWrap   = document.getElementById('vizWrap');
+const glow      = document.getElementById('playerGlow');
+const noFile    = document.getElementById('noFileHint');
+let hasFile=true, playing=false;
+
+
+  audio.addEventListener('canplay',()=>{ if(!playing) startPlay(); },{once:true});
+});
+
+/* ── PLAY/PAUSE ── */
+function togglePlay(){
+  // resume AudioContext если suspended (нужно для браузера)
+  if(window.SFX) window.SFX.unlock();
+  // небольшой таймаут чтобы AudioContext успел resume
+  setTimeout(()=>{
+    playing ? pausePlay() : startPlay();
+  }, 50);
+}
+function startPlay(){
+  audio.play().catch(()=>{});
+  playing=true;
+  vinyl.classList.add('spinning');
+  vinylWrap.classList.add('playing');
+  vizWrap.classList.add('active');
+  glow.classList.add('playing');
+  playBtn.innerHTML='⏸'; playBtn.classList.add('playing');
+  if(window.SFX) window.SFX.chime([523,659],0.05);
+}
+function pausePlay(){
+  audio.pause(); playing=false;
+  vinyl.classList.remove('spinning');
+  vinylWrap.classList.remove('playing');
+  vizWrap.classList.remove('active');
+  glow.classList.remove('playing');
+  playBtn.innerHTML='▶'; playBtn.classList.remove('playing');
+}
+function rewind(){ audio.currentTime=Math.max(0,audio.currentTime-15); if(window.SFX) window.SFX.hover(); }
+function forward(){ audio.currentTime=Math.min(audio.duration||0,audio.currentTime+15); if(window.SFX) window.SFX.hover(); }
+
+/* ── PROGRESS ── */
+audio.addEventListener('timeupdate',()=>{
+  if(!audio.duration) return;
+  const pct=(audio.currentTime/audio.duration)*100;
+  document.getElementById('progressFill').style.width=pct+'%';
+  document.getElementById('timeElapsed').textContent=fmt(audio.currentTime);
+});
+audio.addEventListener('ended',()=>{ pausePlay(); document.getElementById('progressFill').style.width='0%'; });
+function seekTo(e){
+  if(!hasFile||!audio.duration) return;
+  audio.currentTime=(e.offsetX/document.getElementById('progressBar').offsetWidth)*audio.duration;
+}
+function fmt(s){
+  if(!s||isNaN(s)) return '0:00';
+  const m=Math.floor(s/60),sec=Math.floor(s%60);
+  return m+':'+(sec<10?'0':'')+sec;
+}
+
+/* ── HINT PULSE ── */
+function pulseHint(){
+  if(window.SFX) window.SFX.hover();
+  vinyl.style.transition='transform 0.07s';
+  let n=0; const iv=setInterval(()=>{
+    vinyl.style.transform=`rotate(${n%2?-3:3}deg)`;
+    if(++n>5){ clearInterval(iv); vinyl.style.transform=''; vinyl.style.transition=''; }
+  },65);
+}
+
+/* ── FLOATING NOTES ── */
+const NOTES=['♩','♪','♫','♬','🎵','🎶'];
+let noteIv;
+audio.addEventListener('play',()=>{
+  noteIv=setInterval(()=>{
+    const el=document.createElement('div');
+    el.textContent=NOTES[Math.floor(Math.random()*NOTES.length)];
+    const sz=12+Math.random()*10, lx=15+Math.random()*70;
+    el.style.cssText=`position:fixed;left:${lx}vw;bottom:70px;font-size:${sz}px;pointer-events:none;z-index:5;opacity:0;color:rgba(255,107,157,0.65);transition:bottom 2.6s ease-out,opacity 0.4s;`;
+    document.body.appendChild(el);
+    requestAnimationFrame(()=>{
+      el.style.opacity='1'; el.style.bottom=(130+Math.random()*180)+'px';
+      setTimeout(()=>{ el.style.opacity='0'; setTimeout(()=>el.remove(),500); },2100);
+    });
+  },950);
+});
+audio.addEventListener('pause',()=>clearInterval(noteIv));
+audio.addEventListener('ended',()=>clearInterval(noteIv));
+
+audio.addEventListener('loadedmetadata',()=>{
+  document.getElementById('timeDuration').textContent=fmt(audio.duration);
+});
+audio.addEventListener('error',()=>{ console.warn('Аудио не загрузилось. Убедись что sound1.mp3 лежит рядом с letter.html'); });
+
+document.getElementById('spotifyCard').addEventListener('mouseenter',()=>window.SFX&&window.SFX.hover());
+</script>
 </body>
 </html>

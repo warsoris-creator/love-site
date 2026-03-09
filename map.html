@@ -236,6 +236,53 @@
   font-size:9px; letter-spacing:3px; color:var(--dim);
   text-transform:uppercase; margin-top:4px; display:block;
 }
+/* ── EASTER EGG SECTION ── */
+.egg-section { padding:0 20px 80px; max-width:760px; margin:0 auto; position:relative; z-index:1; }
+.egg-divider { display:flex; align-items:center; gap:14px; margin-bottom:28px; }
+.egg-line { flex:1; height:1px; background:linear-gradient(to right,transparent,rgba(255,45,85,0.15),transparent); }
+.egg-hint { font-size:10px; letter-spacing:5px; color:rgba(255,45,85,0.35); text-transform:uppercase; white-space:nowrap; cursor:default; transition:color 0.3s; }
+.egg-hint:hover { color:rgba(255,45,85,0.7); }
+
+.egg-cards { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px; }
+@media(max-width:500px){ .egg-cards { grid-template-columns:1fr; } }
+
+.egg-card {
+  display:flex; align-items:center; gap:14px; padding:18px 16px;
+  text-decoration:none; border:1px solid rgba(255,45,85,0.15);
+  background:rgba(255,255,255,0.015);
+  transition:all 0.3s; position:relative; overflow:hidden;
+}
+.egg-card::before {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(135deg,rgba(255,45,85,0.07),transparent);
+  opacity:0; transition:opacity 0.3s;
+}
+.egg-card:hover { border-color:rgba(255,45,85,0.45); transform:translateY(-3px); box-shadow:0 12px 36px rgba(255,45,85,0.12); }
+.egg-card:hover::before { opacity:1; }
+.train-card:hover { border-color:rgba(255,200,80,0.4); box-shadow:0 12px 36px rgba(255,200,80,0.08); }
+.train-card::before { background:linear-gradient(135deg,rgba(255,200,80,0.06),transparent); }
+
+.egg-emoji { font-size:28px; flex-shrink:0; transition:transform 0.3s; }
+.egg-card:hover .egg-emoji { transform:scale(1.25) rotate(-5deg); }
+.egg-body { flex:1; }
+.egg-title { font-family:'Playfair Display',serif; font-size:17px; color:var(--cream); font-weight:900; }
+.egg-desc { font-size:10px; color:var(--dim); margin-top:2px; }
+.egg-sub { font-size:9px; color:rgba(255,45,85,0.5); letter-spacing:2px; margin-top:4px; }
+.egg-arrow { font-size:18px; color:rgba(255,45,85,0.4); transition:transform 0.3s, color 0.3s; }
+.egg-card:hover .egg-arrow { transform:translateX(4px); color:rgba(255,45,85,0.9); }
+.egg-footer { text-align:center; font-size:10px; color:rgba(255,240,245,0.18); letter-spacing:2px; }
+
+/* clickable plane/train hint pulse */
+.moving-plane, .moving-train { cursor:pointer; }
+.easter-pop {
+  position:fixed; z-index:500; font-family:'Playfair Display',serif; font-style:italic;
+  font-size:clamp(13px,2.5vw,17px); color:var(--cream);
+  background:rgba(15,5,25,0.96); border:1px solid rgba(255,45,85,0.3);
+  padding:14px 20px; max-width:280px; text-align:center;
+  pointer-events:none; opacity:0; transform:translateY(8px) scale(0.96);
+  transition:opacity 0.3s, transform 0.3s;
+}
+.easter-pop.show { opacity:1; transform:translateY(0) scale(1); }
 </style>
 </head>
 <body>
@@ -485,65 +532,100 @@
     </div>
   </div>
 
+  <!-- 🥚 EASTER EGGS — купить билеты -->
+  <div class="egg-section">
+    <div class="egg-divider">
+      <div class="egg-line"></div>
+      <span class="egg-hint" id="eggHint">✦ &nbsp;а может — приехать?&nbsp; ✦</span>
+      <div class="egg-line"></div>
+    </div>
+    <div class="egg-cards">
+      <a class="egg-card train-card" href="https://www.rzd.ru/ru/9269" target="_blank" data-external="true" id="trainCard">
+        <div class="egg-emoji">🚄</div>
+        <div class="egg-body">
+          <div class="egg-title">Сапсан</div>
+          <div class="egg-desc">Москва → Питер на РЖД</div>
+          <div class="egg-sub">~4 часа · от 2000 ₽</div>
+        </div>
+        <div class="egg-arrow">→</div>
+      </a>
+      <a class="egg-card plane-card" href="https://aviasales.ru/search/MOW0906LED1?adults=1" target="_blank" data-external="true" id="planeCard">
+        <div class="egg-emoji">✈️</div>
+        <div class="egg-body">
+          <div class="egg-title">Авиасейлс</div>
+          <div class="egg-desc">Москва → Питер на самолёте</div>
+          <div class="egg-sub">~1.5 часа · от 1500 ₽</div>
+        </div>
+        <div class="egg-arrow">→</div>
+      </a>
+    </div>
+    <p class="egg-footer">подсказка: кликни на ✈️ или 🚄 выше 😏</p>
+  </div>
+
 </div><!-- /page-content -->
 
 <script src="shared.js"></script>
 <script>
-// Animate distance counter
+// Distance counter
 function animateDist(){
-  const el = document.getElementById('distNum');
-  const target = 634;
-  let c = 0;
-  const step = target / 80;
-  const iv = setInterval(()=>{
-    c = Math.min(c + step, target);
-    el.textContent = Math.floor(c);
-    if(c >= target){ el.textContent = target; clearInterval(iv); }
-  }, 18);
+  const el=document.getElementById('distNum'), target=634; let c=0;
+  const iv=setInterval(()=>{
+    c=Math.min(c+target/80,target);
+    el.textContent=Math.floor(c);
+    if(c>=target){ el.textContent=target; clearInterval(iv); }
+  },18);
 }
-
-// Trigger when in view
-const obs = new IntersectionObserver(entries=>{
-  if(entries[0].isIntersecting){ animateDist(); obs.disconnect(); }
-},{ threshold:0.3 });
+const obs=new IntersectionObserver(e=>{ if(e[0].isIntersecting){animateDist();obs.disconnect();} },{threshold:0.3});
 obs.observe(document.getElementById('distNum'));
 
-// City block entrance animation
-const cityObs = new IntersectionObserver(entries=>{
-  entries.forEach(e=>{
-    if(e.isIntersecting){
-      e.target.style.opacity='1';
-      e.target.style.transform='translateY(0)';
-    }
-  });
-},{ threshold:0.1 });
-document.querySelectorAll('.city-block, .distance-card').forEach(el=>{
-  el.style.opacity='0';
-  el.style.transform='translateY(30px)';
+// City entrance
+const cityObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.style.opacity='1'; e.target.style.transform='translateY(0)'; } });
+},{threshold:0.1});
+document.querySelectorAll('.city-block,.distance-card').forEach(el=>{
+  el.style.opacity='0'; el.style.transform='translateY(30px)';
   el.style.transition='opacity 0.7s ease, transform 0.7s ease';
   cityObs.observe(el);
 });
 
-// Sound on city card hover
+// Sounds
 document.querySelectorAll('.city-block').forEach(el=>{
-  el.addEventListener('mouseenter',()=> window.SFX && window.SFX.hover());
+  el.addEventListener('mouseenter',()=>window.SFX&&window.SFX.hover());
+});
+setInterval(()=>window.SFX&&window.SFX.whoosh(),5000);
+new IntersectionObserver((e,o)=>{
+  if(e[0].isIntersecting){ o.disconnect(); setTimeout(()=>window.SFX&&window.SFX.chime([261,329,392],0.07),800); }
+},{threshold:0.5}).observe(document.getElementById('distNum'));
+
+// 🥚 EASTER EGG: click on animated plane → open aviasales
+document.getElementById('movingPlane').addEventListener('click',()=>{
+  if(window.SFX) window.SFX.chime([880,1046,1318],0.08);
+  showPop('✈️ Отличный выбор!\nЛечу за билетами…', ()=> window.open('https://aviasales.ru/search/MOW0906LED1?adults=1','_blank'));
 });
 
-// Whoosh every time plane animation loops (~5s)
-const planeEl = document.getElementById('movingPlane');
-if(planeEl){
-  setInterval(()=> window.SFX && window.SFX.whoosh(), 5000);
-}
+// 🥚 EASTER EGG: click on train → open RZD
+document.getElementById('movingTrain').addEventListener('click',()=>{
+  if(window.SFX) window.SFX.chime([523,659,784],0.08);
+  showPop('🚄 Сапсан ждёт!\nЕду смотреть расписание…', ()=> window.open('https://www.rzd.ru/ru/9269','_blank'));
+});
 
-// Chime when distance counter appears
-const distObs2 = new IntersectionObserver(entries=>{
-  if(entries[0].isIntersecting){
-    distObs2.disconnect();
-    setTimeout(()=> window.SFX && window.SFX.chime([261,329,392],0.07), 800);
-  }
-},{ threshold:0.5 });
-const distEl = document.getElementById('distNum');
-if(distEl) distObs2.observe(distEl);
+// egg card sounds
+document.getElementById('trainCard').addEventListener('mouseenter',()=>window.SFX&&window.SFX.hover());
+document.getElementById('planeCard').addEventListener('mouseenter',()=>window.SFX&&window.SFX.hover());
+
+// popup helper
+let popTimeout;
+function showPop(msg, cb){
+  let pop=document.querySelector('.easter-pop');
+  if(!pop){ pop=document.createElement('div'); pop.className='easter-pop'; document.body.appendChild(pop); }
+  pop.textContent=msg;
+  pop.style.left='50%'; pop.style.top='50%';
+  pop.style.transform='translate(-50%,-50%) scale(0.96)';
+  pop.style.cssText+=';position:fixed;left:50%;top:50%;transform:translate(-50%,-60%) scale(0.96);';
+  requestAnimationFrame(()=>{ pop.style.transition='opacity 0.3s,transform 0.3s'; pop.classList.add('show'); });
+  clearTimeout(popTimeout);
+  popTimeout=setTimeout(()=>{ pop.classList.remove('show'); if(cb) setTimeout(cb,350); },1600);
+}
 </script>
 </body>
 </html>

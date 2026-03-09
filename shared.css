@@ -11,7 +11,9 @@ body {
   font-family:'Space Mono',monospace;
   min-height:100vh; overflow-x:hidden;
   cursor:none;
+  scrollbar-width:none;
 }
+body::-webkit-scrollbar { display:none; }
 @media (hover:none) and (pointer:coarse) {
   body { cursor:auto !important; }
   .cursor { display:none !important; }
