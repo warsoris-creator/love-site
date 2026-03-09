@@ -523,6 +523,27 @@ document.querySelectorAll('.city-block, .distance-card').forEach(el=>{
   el.style.transition='opacity 0.7s ease, transform 0.7s ease';
   cityObs.observe(el);
 });
+
+// Sound on city card hover
+document.querySelectorAll('.city-block').forEach(el=>{
+  el.addEventListener('mouseenter',()=> window.SFX && window.SFX.hover());
+});
+
+// Whoosh every time plane animation loops (~5s)
+const planeEl = document.getElementById('movingPlane');
+if(planeEl){
+  setInterval(()=> window.SFX && window.SFX.whoosh(), 5000);
+}
+
+// Chime when distance counter appears
+const distObs2 = new IntersectionObserver(entries=>{
+  if(entries[0].isIntersecting){
+    distObs2.disconnect();
+    setTimeout(()=> window.SFX && window.SFX.chime([261,329,392],0.07), 800);
+  }
+},{ threshold:0.5 });
+const distEl = document.getElementById('distNum');
+if(distEl) distObs2.observe(distEl);
 </script>
 </body>
 </html>

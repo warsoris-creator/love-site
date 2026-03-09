@@ -8,33 +8,29 @@
 <style>
 body { overflow:hidden; }
 
-/* ── INTRO SEQUENCE ── */
+/* ── INTRO ── */
 #intro {
   position:fixed; inset:0; z-index:50;
   display:flex; flex-direction:column;
   align-items:center; justify-content:center;
-  background:var(--dark);
-  transition:opacity 1.2s ease;
+  background:var(--dark); transition:opacity 1.2s ease;
 }
 #intro.out { opacity:0; pointer-events:none; }
 
 .intro-line {
   font-family:'Playfair Display',serif;
-  font-size:clamp(18px,4vw,32px);
-  color:var(--dim); font-style:italic;
+  font-size:clamp(18px,4vw,30px); color:var(--dim); font-style:italic;
   text-align:center; padding:0 30px;
   opacity:0; transform:translateY(16px);
   transition:opacity 1s ease, transform 1s ease;
-  line-height:1.5; margin-bottom:16px;
+  line-height:1.6; margin-bottom:14px;
 }
 .intro-line.show { opacity:1; transform:translateY(0); }
 
 .intro-name {
   font-family:'Playfair Display',serif;
-  font-size:clamp(52px,13vw,110px);
-  font-weight:900; color:var(--cream);
-  text-align:center;
-  opacity:0; transform:scale(0.85);
+  font-size:clamp(52px,13vw,110px); font-weight:900; color:var(--cream);
+  text-align:center; opacity:0; transform:scale(0.85);
   transition:opacity 1.2s ease, transform 1.2s cubic-bezier(0.34,1.4,0.64,1);
   line-height:1; margin-top:12px;
   text-shadow:0 0 60px rgba(255,45,85,0.5), 0 0 120px rgba(255,45,85,0.2);
@@ -48,28 +44,13 @@ body { overflow:hidden; }
   font-size:10px; letter-spacing:4px; color:rgba(255,240,245,0.2);
   text-transform:uppercase; cursor:pointer;
   opacity:0; transition:opacity 0.5s, color 0.2s;
-  background:none; border:none;
-  touch-action:manipulation;
+  background:none; border:none; touch-action:manipulation;
 }
 .intro-skip.show { opacity:1; }
 .intro-skip:hover { color:var(--dim); }
 
-/* ── PARTICLES burst on name ── */
-.particle {
-  position:fixed; pointer-events:none; z-index:51;
-  font-size:16px; animation:pFloat linear forwards;
-}
-@keyframes pFloat {
-  0%  { opacity:0; transform:translate(0,0) scale(0.5); }
-  10% { opacity:1; transform:translate(0,0) scale(1); }
-  100%{ opacity:0; }
-}
-
-/* ── MAIN CONTENT ── */
-#main {
-  opacity:0; transition:opacity 1s ease;
-  position:relative; z-index:1;
-}
+/* ── MAIN ── */
+#main { opacity:0; transition:opacity 1s ease; position:relative; z-index:1; }
 #main.show { opacity:1; }
 
 .hero {
@@ -97,29 +78,23 @@ body { overflow:hidden; }
   opacity:0; animation:fadeUp 1s ease 0.7s forwards;
 }
 .hero-desc {
-  font-size:clamp(13px,2vw,16px); color:var(--dim);
-  line-height:1.8; max-width:480px; font-style:italic;
+  font-size:clamp(13px,2vw,16px); color:var(--dim); line-height:1.8;
+  max-width:480px; font-style:italic;
   font-family:'Playfair Display',serif;
-  opacity:0; animation:fadeUp 1s ease 0.9s forwards;
-  margin-bottom:48px;
+  opacity:0; animation:fadeUp 1s ease 0.9s forwards; margin-bottom:48px;
 }
 
 /* ── MENU CARDS ── */
-.menu-section {
-  padding:0 20px 100px; position:relative; z-index:1;
-}
+.menu-section { padding:0 20px 100px; position:relative; z-index:1; }
 .menu-grid {
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
   gap:16px; max-width:960px; margin:0 auto;
 }
 .menu-card {
   position:relative; border:1px solid var(--border);
-  background:rgba(255,255,255,0.02);
-  padding:32px 28px; text-decoration:none;
-  display:flex; flex-direction:column; gap:12px;
-  transition:all 0.3s; overflow:hidden;
-  backdrop-filter:blur(6px);
+  background:rgba(255,255,255,0.02); padding:32px 28px;
+  text-decoration:none; display:flex; flex-direction:column; gap:12px;
+  transition:all 0.3s; overflow:hidden; backdrop-filter:blur(6px);
 }
 .menu-card::before {
   content:''; position:absolute; inset:0;
@@ -128,180 +103,158 @@ body { overflow:hidden; }
 }
 .menu-card:hover { border-color:rgba(255,45,85,0.5); transform:translateY(-4px); box-shadow:0 12px 40px rgba(255,45,85,0.15); }
 .menu-card:hover::before { opacity:1; }
-.menu-card.locked { opacity:0.45; cursor:default; }
-.menu-card.locked:hover { transform:none; box-shadow:none; border-color:var(--border); }
-.menu-card.locked:hover::before { opacity:0; }
+.menu-card.locked { opacity:0.45; cursor:default; pointer-events:none; }
 .card-icon { font-size:32px; }
 .card-num { font-size:10px; letter-spacing:4px; color:var(--red); text-transform:uppercase; }
-.card-title {
-  font-family:'Playfair Display',serif; font-size:24px;
-  font-weight:900; color:var(--cream);
-}
+.card-title { font-family:'Playfair Display',serif; font-size:24px; font-weight:900; color:var(--cream); }
 .card-desc { font-size:11px; color:var(--dim); line-height:1.6; }
-.card-arrow {
-  margin-top:auto; padding-top:16px;
-  font-size:11px; letter-spacing:3px; color:var(--red);
-  text-transform:uppercase;
-}
+.card-arrow { margin-top:auto; padding-top:16px; font-size:11px; letter-spacing:3px; color:var(--red); text-transform:uppercase; }
 .locked-tag {
-  position:absolute; top:16px; right:16px;
-  font-size:9px; letter-spacing:3px; color:rgba(255,240,245,0.2);
-  text-transform:uppercase; border:1px solid rgba(255,255,255,0.08);
-  padding:4px 8px; border-radius:20px;
+  position:absolute; top:16px; right:16px; font-size:9px; letter-spacing:3px;
+  color:rgba(255,240,245,0.2); text-transform:uppercase;
+  border:1px solid rgba(255,255,255,0.08); padding:4px 8px; border-radius:20px;
 }
-
-/* animations */
 .menu-card { opacity:0; transform:translateY(24px); }
 .menu-card.visible { animation:cardIn 0.6s ease forwards; }
 @keyframes cardIn { to { opacity:1; transform:translateY(0); } }
 @keyframes fadeUp { from{opacity:0;transform:translateY(20px);} to{opacity:1;transform:translateY(0);} }
 
-/* ── FORTUNE COOKIE ── */
-.fortune-wrap {
-  position:relative; z-index:1;
-  display:flex; flex-direction:column; align-items:center;
-  padding:0 20px 20px; margin-top:-10px;
-}
-.fortune-hint {
-  font-size:10px; letter-spacing:4px; color:rgba(255,45,85,0.4);
-  text-transform:uppercase; margin-bottom:14px;
-  opacity:0; animation:fadeUp 1s ease 1.5s forwards;
-}
-.cookie-scene {
-  position:relative; width:120px; height:90px;
-  cursor:pointer; touch-action:manipulation;
-  opacity:0; animation:fadeUp 1s ease 1.6s forwards;
-}
-.cookie-scene:hover .cookie-glow { opacity:1; }
-
-/* whole cookie */
-.cookie-whole {
-  position:absolute; inset:0;
-  display:flex; align-items:center; justify-content:center;
-  font-size:64px; transition:all 0.25s;
-  filter:drop-shadow(0 0 12px rgba(255,200,80,0.3));
-  user-select:none;
-}
-.cookie-scene:hover .cookie-whole {
-  transform:scale(1.08);
-  filter:drop-shadow(0 0 22px rgba(255,200,80,0.55));
-}
-
-/* halves - hidden until crack */
-.cookie-half-l, .cookie-half-r {
-  position:absolute; top:0; font-size:52px;
-  opacity:0; transition:all 0.5s cubic-bezier(0.34,1.4,0.64,1);
-  user-select:none;
-}
-.cookie-half-l { left:0; transform-origin:right center; }
-.cookie-half-r { right:0; transform-origin:left center; }
-
-.cookie-scene.cracked .cookie-whole { opacity:0; transform:scale(0.5); }
-.cookie-scene.cracked .cookie-half-l { opacity:1; transform:translateX(-18px) rotate(-22deg); }
-.cookie-scene.cracked .cookie-half-r { opacity:1; transform:translateX(18px) rotate(22deg); }
-
-/* glow */
-.cookie-glow {
-  position:absolute; inset:-20px; border-radius:50%;
-  background:radial-gradient(circle, rgba(255,200,80,0.12), transparent 70%);
-  opacity:0; transition:opacity 0.3s; pointer-events:none;
-}
-
-/* fortune strip */
-.fortune-strip {
-  position:absolute; bottom:-14px; left:50%;
-  transform:translateX(-50%) scaleX(0);
-  transform-origin:center;
-  background:var(--cream); color:#1a0008;
+.bottom-quote { text-align:center; padding:60px 20px; position:relative; z-index:1; }
+.bottom-quote q {
   font-family:'Playfair Display',serif; font-style:italic;
-  font-size:11px; white-space:nowrap; padding:4px 10px;
-  border-radius:2px; pointer-events:none;
-  transition:transform 0.4s cubic-bezier(0.34,1.5,0.64,1) 0.2s;
-  z-index:10; box-shadow:0 2px 12px rgba(0,0,0,0.4);
+  font-size:clamp(14px,2.5vw,20px); color:var(--dim); line-height:1.8;
 }
-.cookie-scene.cracked .fortune-strip { transform:translateX(-50%) scaleX(1); }
+.bottom-quote cite {
+  display:block; margin-top:12px; font-size:10px; letter-spacing:4px;
+  color:rgba(255,45,85,0.5); text-transform:uppercase; font-style:normal;
+}
 
-/* fortune modal */
+/* ── FORTUNE COOKIE — fixed top-left corner ── */
+.cookie-corner {
+  position:fixed; top:68px; left:16px; z-index:150;
+  cursor:pointer; touch-action:manipulation;
+  width:52px; height:52px;
+  display:flex; align-items:center; justify-content:center;
+}
+@media(max-width:600px){ .cookie-corner { top:62px; left:10px; width:44px; height:44px; } }
+
+.cookie-whole {
+  font-size:36px; display:block;
+  transition:transform 0.25s, filter 0.25s;
+  filter:drop-shadow(0 0 8px rgba(255,200,80,0.15));
+  user-select:none; position:relative; z-index:2;
+}
+@media(max-width:600px){ .cookie-whole { font-size:30px; } }
+.cookie-corner:hover .cookie-whole {
+  transform:scale(1.18) rotate(-8deg);
+  filter:drop-shadow(0 0 18px rgba(255,200,80,0.55));
+}
+.cookie-corner.cracked .cookie-whole { opacity:0; transform:scale(0.4); transition:all 0.3s; }
+
+/* gold pulse ring */
+.cookie-ring {
+  position:absolute; inset:-6px; border-radius:50%;
+  border:1px solid rgba(255,200,80,0);
+  transition:border-color 0.3s;
+  animation:cookiePulse 3s ease-in-out infinite;
+}
+@keyframes cookiePulse {
+  0%,100%{ box-shadow:0 0 0 0 rgba(255,200,80,0); }
+  50%{ box-shadow:0 0 0 6px rgba(255,200,80,0.08); }
+}
+.cookie-corner:hover .cookie-ring { border-color:rgba(255,200,80,0.3); }
+
+/* crumb particles */
+.crumb {
+  position:fixed; pointer-events:none; z-index:600; font-size:9px;
+  animation:crumbFly 0.9s ease-out forwards;
+}
+@keyframes crumbFly {
+  0%{ opacity:1; transform:translate(0,0) rotate(0deg); }
+  100%{ opacity:0; transform:translate(var(--cx),var(--cy)) rotate(var(--cr)); }
+}
+
+/* ── FORTUNE MODAL ── */
 .fortune-modal {
   position:fixed; inset:0; z-index:500;
-  display:flex; align-items:center; justify-content:center;
-  padding:20px;
-  background:rgba(4,1,14,0.85); backdrop-filter:blur(16px);
+  display:flex; align-items:center; justify-content:center; padding:20px;
+  background:rgba(4,1,14,0.88); backdrop-filter:blur(20px);
   opacity:0; pointer-events:none; transition:opacity 0.4s;
 }
 .fortune-modal.show { opacity:1; pointer-events:all; }
+
 .fortune-card {
-  max-width:460px; width:100%;
-  background:linear-gradient(135deg, #1a0a12, #0d0318);
-  border:1px solid rgba(255,200,80,0.3);
-  padding:48px 40px; text-align:center; position:relative;
-  box-shadow:0 0 80px rgba(255,45,85,0.15), 0 0 160px rgba(255,200,80,0.05);
-  transform:scale(0.88); transition:transform 0.4s cubic-bezier(0.34,1.4,0.64,1);
+  max-width:440px; width:100%;
+  background:linear-gradient(145deg,#160810,#0b0220);
+  border:1px solid rgba(255,200,80,0.28);
+  padding:48px 36px; text-align:center; position:relative;
+  box-shadow:0 0 80px rgba(255,45,85,0.12), 0 0 200px rgba(255,200,80,0.04);
+  transform:scale(0.88) translateY(20px);
+  transition:transform 0.5s cubic-bezier(0.34,1.4,0.64,1);
 }
-.fortune-modal.show .fortune-card { transform:scale(1); }
-.fortune-card::before, .fortune-card::after {
-  content:''; position:absolute; inset:6px;
-  border:1px solid rgba(255,200,80,0.1); pointer-events:none;
+.fortune-modal.show .fortune-card { transform:scale(1) translateY(0); }
+/* double inner border like real fortune slip */
+.fortune-card::before {
+  content:''; position:absolute; inset:8px;
+  border:1px solid rgba(255,200,80,0.10); pointer-events:none;
 }
-.fortune-card::after { inset:10px; }
-.fc-top {
-  font-size:10px; letter-spacing:6px; color:rgba(255,200,80,0.5);
-  text-transform:uppercase; margin-bottom:28px;
-}
-.fc-cookie-emoji { font-size:48px; margin-bottom:20px; display:block; }
+
+.fc-pip { font-size:42px; margin-bottom:18px; display:block; }
 .fc-quote {
   font-family:'Playfair Display',serif; font-style:italic;
-  font-size:clamp(17px,3vw,22px); color:var(--cream);
-  line-height:1.7; margin-bottom:24px;
+  font-size:clamp(16px,3vw,21px); color:var(--cream);
+  line-height:1.75; margin-bottom:20px;
+  transition:opacity 0.25s, transform 0.25s;
 }
 .fc-num {
-  font-size:10px; letter-spacing:4px; color:rgba(255,200,80,0.35);
-  margin-bottom:28px; display:block;
+  font-size:10px; letter-spacing:4px; color:rgba(255,200,80,0.3);
+  display:block; margin-bottom:30px;
 }
-.fc-close {
-  font-size:11px; letter-spacing:3px; color:rgba(255,240,245,0.35);
-  text-transform:uppercase; cursor:pointer; background:none; border:none;
-  transition:color 0.2s; padding:8px 20px;
-  border:1px solid rgba(255,240,245,0.1); border-radius:20px;
-}
-.fc-close:hover { color:var(--cream); border-color:rgba(255,240,245,0.3); }
+.fc-btns { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
 .fc-next {
-  font-size:11px; letter-spacing:3px; color:rgba(255,200,80,0.6);
+  font-size:10px; letter-spacing:3px; color:rgba(255,200,80,0.7);
   text-transform:uppercase; cursor:pointer; background:none;
   border:1px solid rgba(255,200,80,0.25); border-radius:20px;
-  padding:8px 20px; margin-right:10px; transition:all 0.2s;
+  padding:9px 20px; transition:all 0.2s;
 }
 .fc-next:hover { color:rgba(255,200,80,1); border-color:rgba(255,200,80,0.6); }
-.fc-btns { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+.fc-close {
+  font-size:10px; letter-spacing:3px; color:rgba(255,240,245,0.3);
+  text-transform:uppercase; cursor:pointer; background:none;
+  border:1px solid rgba(255,240,245,0.1); border-radius:20px; padding:9px 20px;
+  transition:all 0.2s;
+}
+.fc-close:hover { color:var(--cream); border-color:rgba(255,240,245,0.35); }
 
-/* crumbs */
-.crumb {
-  position:fixed; pointer-events:none; z-index:501;
-  font-size:10px; animation:crumbFly linear forwards;
-}
-@keyframes crumbFly {
-  0%{ opacity:1; transform:translate(0,0) rotate(0deg) scale(1); }
-  100%{ opacity:0; transform:translate(var(--cx),var(--cy)) rotate(var(--cr)) scale(0.3); }
-}
-  text-align:center; padding:60px 20px;
-  position:relative; z-index:1;
-}
-.bottom-quote q {
-  font-family:'Playfair Display',serif; font-style:italic;
-  font-size:clamp(14px,2.5vw,20px); color:var(--dim);
-  line-height:1.8;
-}
-.bottom-quote cite {
-  display:block; margin-top:12px;
-  font-size:10px; letter-spacing:4px; color:rgba(255,45,85,0.5);
-  text-transform:uppercase; font-style:normal;
+/* particle burst */
+.particle {
+  position:fixed; pointer-events:none; z-index:51; font-size:16px;
 }
 </style>
 </head>
 <body>
 <canvas id="stars-canvas"></canvas>
 
-<!-- INTRO -->
+<!-- ── FORTUNE COOKIE (corner) ── -->
+<div class="cookie-corner" id="cookieCorner" onclick="crackCookie()" title="Печенье с предсказанием">
+  <div class="cookie-ring"></div>
+  <span class="cookie-whole">🥠</span>
+</div>
+
+<!-- ── FORTUNE MODAL ── -->
+<div class="fortune-modal" id="fortuneModal" onclick="if(event.target===this)closeModal()">
+  <div class="fortune-card">
+    <span class="fc-pip">🥠</span>
+    <div class="fc-quote" id="fcQuote"></div>
+    <span class="fc-num" id="fcNum"></span>
+    <div class="fc-btns">
+      <button class="fc-next" onclick="nextFortune()">ещё ✦</button>
+      <button class="fc-close" onclick="closeModal()">закрыть</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── INTRO ── -->
 <div id="intro">
   <div class="intro-line" id="il1">Во вселенной миллиарды людей…</div>
   <div class="intro-line" id="il2">Но мне повезло встретить только одного правильного.</div>
@@ -309,47 +262,34 @@ body { overflow:hidden; }
   <button class="intro-skip" id="skipBtn" onclick="skipIntro()">пропустить →</button>
 </div>
 
-<!-- MAIN -->
+<!-- ── MAIN ── -->
 <div id="main">
   <nav class="site-nav">
     <a href="index.html" class="nav-logo">for varya ✦</a>
     <div class="nav-links">
-      <a href="index.html" class="nav-link active">Главная</a>
+      <a href="index.html"    class="nav-link active">Главная</a>
       <a href="valentine.html" class="nav-link">Валентинка</a>
-      <a href="map.html" class="nav-link">Карта</a>
+      <a href="map.html"      class="nav-link">Карта</a>
       <a href="timeline.html" class="nav-link">История</a>
-      <a href="gallery.html" class="nav-link">Галерея</a>
-      <a href="letter.html" class="nav-link">Письмо</a>
+      <a href="gallery.html"  class="nav-link">Галерея</a>
+      <a href="letter.html"   class="nav-link">Письмо</a>
     </div>
   </nav>
 
   <div class="page-content">
     <section class="hero">
       <div class="hero-eyebrow">✦ &nbsp;сайт-вселенная для вари&nbsp; ✦</div>
-
-      <!-- FORTUNE COOKIE -->
-      <div class="fortune-wrap">
-        <div class="fortune-hint">🥠 &nbsp;печенье с предсказанием&nbsp; 🥠</div>
-        <div class="cookie-scene" id="cookieScene" onclick="crackCookie()">
-          <div class="cookie-glow"></div>
-          <div class="cookie-whole">🥠</div>
-          <div class="cookie-half-l">🌙</div>
-          <div class="cookie-half-r">✨</div>
-          <div class="fortune-strip" id="fortuneStrip">читать →</div>
-        </div>
-      </div>
       <h1 class="hero-title">МОЯ <span class="red">❤</span></h1>
       <span class="hero-name-italic">Варвара</span>
       <p class="hero-desc">
         Только о двух вещах мы будем жалеть на смертном одре —<br>
         что мало любили и мало путешествовали.
       </p>
-      <a href="valentine.html" class="btn-red">Открыть валентинку →</a>
+      <a href="valentine.html" class="btn-red" onclick="SFX&&SFX.click()">Открыть валентинку →</a>
     </section>
 
     <section class="menu-section">
       <div class="menu-grid" id="menuGrid">
-
         <a href="valentine.html" class="menu-card">
           <div class="card-icon">💘</div>
           <div class="card-num">01 · главное</div>
@@ -357,7 +297,6 @@ body { overflow:hidden; }
           <div class="card-desc">Матрица, квиз, наши сообщения и финальный сюрприз</div>
           <div class="card-arrow">Открыть →</div>
         </a>
-
         <a href="map.html" class="menu-card">
           <div class="card-icon">🗺️</div>
           <div class="card-num">02 · наши места</div>
@@ -365,16 +304,13 @@ body { overflow:hidden; }
           <div class="card-desc">Москва и Питер — города, которые нас связывают</div>
           <div class="card-arrow">Смотреть →</div>
         </a>
-
-        <a href="timeline.html" class="menu-card locked">
-          <div class="locked-tag">скоро</div>
+        <a href="timeline.html" class="menu-card">
           <div class="card-icon">⏳</div>
           <div class="card-num">03 · наша история</div>
           <div class="card-title">Таймлайн</div>
           <div class="card-desc">Лента событий от первого сообщения до сегодня</div>
-          <div class="card-arrow" style="color:var(--dim)">В разработке…</div>
+          <div class="card-arrow">Читать →</div>
         </a>
-
         <a href="gallery.html" class="menu-card locked">
           <div class="locked-tag">скоро</div>
           <div class="card-icon">📸</div>
@@ -383,7 +319,6 @@ body { overflow:hidden; }
           <div class="card-desc">Фотографии, которые я хочу помнить всегда</div>
           <div class="card-arrow" style="color:var(--dim)">В разработке…</div>
         </a>
-
         <a href="letter.html" class="menu-card locked">
           <div class="locked-tag">скоро</div>
           <div class="card-icon">✉️</div>
@@ -392,7 +327,6 @@ body { overflow:hidden; }
           <div class="card-desc">То, что сложно сказать вслух — написано здесь</div>
           <div class="card-arrow" style="color:var(--dim)">В разработке…</div>
         </a>
-
       </div>
     </section>
 
@@ -403,22 +337,9 @@ body { overflow:hidden; }
   </div>
 </div>
 
-<!-- FORTUNE MODAL -->
-<div class="fortune-modal" id="fortuneModal" onclick="if(event.target===this)closeModal()">
-  <div class="fortune-card">
-    <div class="fc-top">🥠 &nbsp;печенье с предсказанием&nbsp; 🥠</div>
-    <span class="fc-cookie-emoji">🥠</span>
-    <div class="fc-quote" id="fcQuote"></div>
-    <span class="fc-num" id="fcNum"></span>
-    <div class="fc-btns">
-      <button class="fc-next" onclick="nextFortune()">ещё одно ✦</button>
-      <button class="fc-close" onclick="closeModal()">закрыть</button>
-    </div>
-  </div>
-</div>
-
 <script src="shared.js"></script>
 <script>
+/* ── FORTUNES ── */
 const FORTUNES = [
   "Тот, кто умеет ждать, получает лучшее.",
   "Расстояние — это просто испытание того, насколько далеко может зайти любовь.",
@@ -434,7 +355,7 @@ const FORTUNES = [
   "Лучшие истории начинаются неожиданно.",
   "Сердце знает дорогу, даже если разум сомневается.",
   "Скоро — это не так далеко, как кажется.",
-  "Каждый день без тебя — это день, который заставляет ждать следующей встречи.",
+  "Каждый день без тебя — день, который заставляет ждать следующей встречи.",
   "Твоя улыбка — чьё-то любимое зрелище.",
   "Самые важные слова часто самые простые.",
   "Города сближаются, если есть причина.",
@@ -455,7 +376,7 @@ const FORTUNES = [
   "Ты — чьё-то «всё хорошо» в конце трудного дня.",
   "Настоящая близость не измеряется километрами.",
   "Тот, кто ждёт — уже любит.",
-  "Каждое «доброй ночи» — это маленькое обещание.",
+  "Каждое «доброй ночи» — маленькое обещание.",
   "В мире миллиарды людей. И всё равно ты нашёл именно её.",
   "Хорошие вещи требуют времени. Лучшие — ещё больше.",
   "Сердце — единственный компас, который никогда не врёт.",
@@ -475,13 +396,13 @@ const FORTUNES = [
   "Настоящее проявляется в мелочах.",
   "Любовь — это когда хочется делиться всем, даже тишиной.",
   "Некоторые сообщения меняют день целиком.",
-  "Самое красивое — то, что видишь только ты двое.",
+  "Самое красивое — то, что видишь только вы двое.",
   "Жди. Лучшее — впереди.",
   "Тот, кто думает о тебе ночью — думает о тебе по-настоящему.",
   "Два города. Один человек. Этого достаточно.",
   "Твоё имя — чьё-то любимое слово.",
   "Время летит быстрее, когда есть кого ждать.",
-  "Самое ценное нельзя купить, только заработать терпением.",
+  "Самое ценное нельзя купить — только заработать терпением.",
   "Встреча будет — просто чуть позже.",
   "Ты — причина, по которой кто-то улыбается без повода.",
   "Каждый день — это шаг навстречу.",
@@ -489,126 +410,101 @@ const FORTUNES = [
   "Твои глаза — чьё-то любимое место в мире.",
   "Самое сильное притяжение — между правильными людьми.",
   "Ожидание заканчивается. Остаётся только то, что было настоящим.",
+  "Каждая секунда приближает к встрече.",
+  "Быть собой рядом с кем-то — это и есть счастье.",
 ];
 
 let cookieCracked = false;
 let currentFortune = 0;
 
-function getDailyFortune() {
-  const day = Math.floor(Date.now() / 86400000);
-  return day % FORTUNES.length;
-}
+function getDailyFortune(){ return Math.floor(Date.now()/86400000) % FORTUNES.length; }
 
-function crackCookie() {
-  if (cookieCracked) { openModal(); return; }
-  cookieCracked = true;
-  const scene = document.getElementById('cookieScene');
-  scene.classList.add('cracked');
+function crackCookie(){
+  const scene = document.getElementById('cookieCorner');
+  if(window.SFX) window.SFX.crack();
 
   // crumbs
   const rect = scene.getBoundingClientRect();
-  const cx = rect.left + rect.width/2;
-  const cy = rect.top + rect.height/2;
-  ['✦','·','✧','·','✦'].forEach((ch, i) => {
-    const el = document.createElement('div');
-    el.className = 'crumb'; el.textContent = ch;
-    const a = (i/5)*Math.PI*2;
-    const d = 30 + Math.random()*50;
-    el.style.cssText = `left:${cx}px;top:${cy}px;color:rgba(255,200,80,0.8);--cx:${Math.cos(a)*d}px;--cy:${Math.sin(a)*d}px;--cr:${Math.random()*360}deg;animation-duration:0.8s;`;
-    document.body.appendChild(el);
-    setTimeout(() => el.remove(), 900);
+  const cx = rect.left + rect.width/2, cy = rect.top + rect.height/2;
+  ['·','✦','·','✧','·'].forEach((ch,i)=>{
+    const el = document.createElement('div'); el.className='crumb'; el.textContent=ch;
+    el.style.color='rgba(255,200,80,0.9)';
+    const a=(i/5)*Math.PI*2, d=24+Math.random()*36;
+    el.style.cssText=`position:fixed;left:${cx}px;top:${cy}px;pointer-events:none;z-index:600;color:rgba(255,200,80,0.9);font-size:9px;animation:crumbFly 0.9s ease-out forwards;--cx:${Math.cos(a)*d}px;--cy:${Math.sin(a)*d}px;--cr:${Math.random()*280}deg;`;
+    document.body.appendChild(el); setTimeout(()=>el.remove(),950);
   });
-
-  setTimeout(openModal, 500);
+  setTimeout(openModal, 280);
 }
 
-function openModal() {
+function openModal(){
   currentFortune = getDailyFortune();
   showFortune(currentFortune);
   document.getElementById('fortuneModal').classList.add('show');
+  if(window.SFX) window.SFX.chime([659,784,1046,1318],0.09);
 }
 
-function showFortune(idx) {
-  document.getElementById('fcQuote').textContent = '«' + FORTUNES[idx] + '»';
-  document.getElementById('fcNum').textContent = '№ ' + (idx+1) + ' из ' + FORTUNES.length;
+function showFortune(idx){
+  document.getElementById('fcQuote').textContent = '«\u2009' + FORTUNES[idx] + '\u2009»';
+  document.getElementById('fcNum').textContent = '№\u2009' + (idx+1) + '\u2009из\u2009' + FORTUNES.length;
 }
 
-function nextFortune() {
-  currentFortune = (currentFortune + 1) % FORTUNES.length;
+function nextFortune(){
+  currentFortune = (currentFortune+1) % FORTUNES.length;
   const q = document.getElementById('fcQuote');
-  q.style.opacity = '0';
-  q.style.transform = 'translateY(8px)';
-  setTimeout(() => {
+  q.style.opacity='0'; q.style.transform='translateY(6px)';
+  if(window.SFX) window.SFX.hover();
+  setTimeout(()=>{
     showFortune(currentFortune);
-    q.style.transition = 'opacity 0.4s, transform 0.4s';
-    q.style.opacity = '1';
-    q.style.transform = 'translateY(0)';
-  }, 200);
+    q.style.transition='opacity 0.35s,transform 0.35s';
+    q.style.opacity='1'; q.style.transform='translateY(0)';
+  },200);
 }
 
-function closeModal() {
+function closeModal(){
   document.getElementById('fortuneModal').classList.remove('show');
-  // reset cookie for next click
-  setTimeout(() => {
-    cookieCracked = false;
-    document.getElementById('cookieScene').classList.remove('cracked');
-  }, 400);
 }
 
+/* ── INTRO ── */
 let introDone = false;
-
-function skipIntro(){
-  introDone = true;
+function skipIntro(){ introDone=true; doSkip(); }
+function doSkip(){
   document.getElementById('intro').classList.add('out');
   document.getElementById('main').classList.add('show');
-  setTimeout(animateCards, 400);
+  setTimeout(animateCards,400);
 }
 
-// INTRO SEQUENCE
-setTimeout(()=>{ document.getElementById('il1').classList.add('show'); }, 600);
-setTimeout(()=>{ document.getElementById('il2').classList.add('show'); }, 2200);
-setTimeout(()=>{
-  document.getElementById('iname').classList.add('show');
-  burstParticles();
-}, 4000);
-setTimeout(()=>{ document.getElementById('skipBtn').classList.add('show'); }, 2000);
-setTimeout(()=>{
-  if(!introDone) skipIntro();
-}, 6500);
+setTimeout(()=>document.getElementById('il1').classList.add('show'),600);
+setTimeout(()=>document.getElementById('il2').classList.add('show'),2200);
+setTimeout(()=>{ document.getElementById('iname').classList.add('show'); burstParticles(); },4000);
+setTimeout(()=>document.getElementById('skipBtn').classList.add('show'),2000);
+setTimeout(()=>{ if(!introDone) doSkip(); },6500);
 
-// PARTICLE BURST
 function burstParticles(){
   const emojis=['✨','💫','⭐','🌟','💕','❤️','🩷'];
-  const cx = window.innerWidth/2, cy = window.innerHeight/2;
-  for(let i=0;i<24;i++){
-    const el = document.createElement('div');
-    el.className = 'particle';
-    el.textContent = emojis[Math.floor(Math.random()*emojis.length)];
-    const angle = (i/24)*Math.PI*2;
-    const dist = 80 + Math.random()*160;
-    const tx = cx + Math.cos(angle)*dist;
-    const ty = cy + Math.sin(angle)*dist;
-    const dur = 1.2 + Math.random()*0.8;
-    el.style.cssText = `left:${cx}px;top:${cy}px;animation-duration:${dur}s;`;
+  const cx=window.innerWidth/2, cy=window.innerHeight/2;
+  for(let i=0;i<22;i++){
+    const el=document.createElement('div'); el.className='particle';
+    el.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+    const angle=(i/22)*Math.PI*2, dist=80+Math.random()*160;
+    const tx=cx+Math.cos(angle)*dist, ty=cy+Math.sin(angle)*dist;
+    const dur=1.2+Math.random()*0.8;
+    el.style.left=cx+'px'; el.style.top=cy+'px'; el.style.fontSize='16px';
+    el.style.position='fixed'; el.style.pointerEvents='none'; el.style.zIndex='51';
     document.getElementById('intro').appendChild(el);
-    // animate manually
-    let t=0, ox=cx, oy=cy;
+    let t=0;
     (function anim(){
       t+=0.02/dur;
-      const x = ox + (tx-ox)*t;
-      const y = oy + (ty-oy)*t;
-      const op = t<0.1 ? t*10 : 1-(t-0.1)/0.9;
+      const x=cx+(tx-cx)*t, y=cy+(ty-cy)*t;
+      const op=t<0.1?t*10:1-(t-0.1)/0.9;
       el.style.left=x+'px'; el.style.top=y+'px'; el.style.opacity=op;
       if(t<1) requestAnimationFrame(anim); else el.remove();
     })();
   }
 }
 
-// ANIMATE CARDS IN
 function animateCards(){
-  const cards = document.querySelectorAll('.menu-card');
-  cards.forEach((c,i)=>{
-    setTimeout(()=>c.classList.add('visible'), i*100);
+  document.querySelectorAll('.menu-card').forEach((c,i)=>{
+    setTimeout(()=>c.classList.add('visible'),i*100);
   });
 }
 </script>

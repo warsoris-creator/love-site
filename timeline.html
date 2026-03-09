@@ -443,7 +443,28 @@ setInterval(spawnJP,5000);
 
 // HEART BURST PETALS
 function burstPetals(){ const rect=document.getElementById('bigHeart').getBoundingClientRect(); const cx=rect.left+rect.width/2; const cy=rect.top+rect.height/2; const em=['🌸','💕','✨','❤️','🩷','💫']; for(let i=0;i<10;i++){ const el=document.createElement('div'); el.className='petal'; el.textContent=em[Math.floor(Math.random()*em.length)]; const a=Math.random()*Math.PI*2; const d=60+Math.random()*130; const dur=1.2+Math.random()*.8; el.style.cssText=`left:${cx}px;top:${cy}px;--dx:${Math.cos(a)*d}px;--dy:${Math.sin(a)*d-40}px;--dr:${(Math.random()-.5)*180}deg;animation-duration:${dur}s;`; document.body.appendChild(el); setTimeout(()=>el.remove(),dur*1000+100); } }
-new IntersectionObserver((e,o)=>{ if(e[0].isIntersecting){ o.disconnect(); burstPetals(); setInterval(burstPetals,3500); } },{threshold:0.5}).observe(document.getElementById('bigHeart'));
+new IntersectionObserver((e,o)=>{ if(e[0].isIntersecting){ o.disconnect(); burstPetals(); setInterval(burstPetals,3500);
+  // heartbeat sound every 1.2s when heart is visible
+  setInterval(()=> window.SFX && window.SFX.heartbeat(), 1200);
+} },{threshold:0.5}).observe(document.getElementById('bigHeart'));
+
+// chime when each timeline event scrolls in
+document.querySelectorAll('.tl-item').forEach((el,i)=>{
+  new IntersectionObserver((entries,obs)=>{
+    if(entries[0].isIntersecting){
+      obs.disconnect();
+      setTimeout(()=> window.SFX && window.SFX.chime([392+i*100,523+i*80],0.06), 300);
+    }
+  },{threshold:0.5}).observe(el);
+});
+
+// chime on counter appear
+new IntersectionObserver((entries,obs)=>{
+  if(entries[0].isIntersecting){
+    obs.disconnect();
+    setTimeout(()=> window.SFX && window.SFX.chime([261,329,392,523],0.08), 600);
+  }
+},{threshold:0.4}).observe(document.getElementById('daysCounter'));
 </script>
 </body>
 </html>
