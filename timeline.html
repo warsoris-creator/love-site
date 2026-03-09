@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Наша история ✦ для Вари</title>
+<link rel="stylesheet" href="shared.css">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;700&family=Zen+Maru+Gothic:wght@400;700&display=swap" rel="stylesheet">
+<style>
+
+body { overflow-x:hidden; background:#04010e; }
+
+#sakura-canvas {
+  position:fixed; inset:0; width:100%; height:100%;
+  pointer-events:none; z-index:0;
+}
+body::before {
+  content:''; position:fixed; inset:0; z-index:0; pointer-events:none;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(255,45,85,0.08), transparent),
+    radial-gradient(ellipse 60% 40% at 10% 80%, rgba(180,100,255,0.05), transparent);
+}
+
+/* HERO */
+.tl-hero {
+  position:relative; z-index:1;
+  text-align:center; padding:90px 20px 30px;
+}
+.tl-eyebrow {
+  font-size:11px; letter-spacing:8px; color:rgba(255,45,85,0.6);
+  text-transform:uppercase; margin-bottom:16px;
+}
+.tl-kanji {
+  font-family:'Noto Serif JP',serif;
+  font-size:clamp(12px,2vw,16px); color:rgba(255,240,245,0.15);
+  letter-spacing:14px; margin-bottom:20px; display:block;
+}
+.tl-title {
+  font-family:'Playfair Display',serif;
+  font-size:clamp(44px,11vw,96px); font-weight:900;
+  color:var(--cream); line-height:.9; margin-bottom:10px;
+}
+.tl-title .red { color:var(--red); }
+.tl-subtitle {
+  font-family:'Noto Serif JP',serif; font-weight:300;
+  font-size:clamp(14px,2.5vw,20px); color:var(--dim);
+  letter-spacing:3px; margin-bottom:36px;
+}
+.days-badge {
+  display:inline-flex; align-items:center; gap:12px;
+  border:1px solid rgba(255,45,85,0.3); padding:12px 28px;
+  border-radius:40px; background:rgba(255,45,85,0.06);
+  backdrop-filter:blur(8px);
+}
+.days-badge-num {
+  font-family:'Playfair Display',serif; font-size:28px;
+  font-weight:900; color:var(--red);
+}
+.days-badge-label {
+  font-size:10px; letter-spacing:3px; color:var(--dim);
+  text-transform:uppercase; line-height:1.5; text-align:left;
+}
+
+/* TIMELINE */
+.tl-container {
+  position:relative; z-index:1;
+  max-width:760px; margin:70px auto 0;
+  padding:0 24px;
+}
+.tl-spine {
+  position:absolute; left:50%; top:0; bottom:0; width:1px;
+  transform:translateX(-50%);
+  background:linear-gradient(to bottom, transparent 0%, rgba(255,45,85,0.4) 8%, rgba(255,45,85,0.2) 88%, transparent 100%);
+}
+@media(max-width:600px){ .tl-spine { left:22px; } }
+
+.tl-item {
+  display:grid; grid-template-columns:1fr 48px 1fr;
+  margin-bottom:64px;
+  opacity:0; transform:translateY(28px);
+  transition:opacity .7s ease, transform .7s ease;
+}
+.tl-item.visible { opacity:1; transform:translateY(0); }
+
+.tl-item:nth-child(odd)  .tl-card  { grid-column:1; grid-row:1; text-align:right; }
+.tl-item:nth-child(odd)  .tl-node  { grid-column:2; grid-row:1; }
+.tl-item:nth-child(odd)  .tl-empty { grid-column:3; grid-row:1; }
+.tl-item:nth-child(even) .tl-empty { grid-column:1; grid-row:1; }
+.tl-item:nth-child(even) .tl-node  { grid-column:2; grid-row:1; }
+.tl-item:nth-child(even) .tl-card  { grid-column:3; grid-row:1; text-align:left; }
+
+@media(max-width:600px){
+  .tl-item { grid-template-columns:44px 1fr; }
+  .tl-item .tl-empty { display:none; }
+  .tl-item:nth-child(odd) .tl-card,
+  .tl-item:nth-child(even) .tl-card { grid-column:2; grid-row:1; text-align:left; }
+  .tl-item:nth-child(odd) .tl-node,
+  .tl-item:nth-child(even) .tl-node { grid-column:1; grid-row:1; }
+}
+
+.tl-node {
+  display:flex; flex-direction:column;
+  align-items:center; padding-top:10px; gap:6px;
+}
+.tl-dot {
+  width:18px; height:18px; border-radius:50%; background:var(--red);
+  position:relative; z-index:2;
+  box-shadow:0 0 0 4px rgba(255,45,85,0.15), 0 0 20px rgba(255,45,85,0.4);
+}
+.tl-dot.big {
+  width:26px; height:26px;
+  box-shadow:0 0 0 6px rgba(255,45,85,0.2), 0 0 40px rgba(255,45,85,0.6);
+}
+.tl-dot::after {
+  content:''; position:absolute; inset:-4px; border-radius:50%;
+  border:1px solid rgba(255,45,85,0.5);
+  animation:ripple 2.5s ease-out infinite;
+}
+.tl-dot.big::after { animation-duration:1.8s; }
+@keyframes ripple {
+  0%{ transform:scale(1); opacity:1; }
+  100%{ transform:scale(2.5); opacity:0; }
+}
+.tl-icon { font-size:20px; margin-top:4px; }
+
+.tl-card { padding:0 20px; }
+.tl-date {
+  font-family:'Noto Serif JP',serif; font-weight:300;
+  font-size:11px; letter-spacing:4px; color:rgba(255,45,85,0.55);
+  text-transform:uppercase; margin-bottom:8px;
+  display:flex; align-items:center; gap:6px;
+}
+.tl-item:nth-child(odd) .tl-date { justify-content:flex-end; }
+@media(max-width:600px){ .tl-item:nth-child(odd) .tl-date { justify-content:flex-start; } }
+
+.tl-card-box {
+  border:1px solid rgba(255,45,85,0.15);
+  background:rgba(255,255,255,0.025);
+  padding:20px; backdrop-filter:blur(6px);
+  position:relative; overflow:hidden;
+}
+.tl-card-box::before {
+  content:''; position:absolute; top:0; left:0;
+  width:2px; height:100%; background:var(--red);
+}
+.tl-item:nth-child(odd)  .tl-card-box::before { left:auto; right:0; }
+@media(max-width:600px){ .tl-item:nth-child(odd) .tl-card-box::before { left:0; right:auto; } }
+
+.tl-event-title {
+  font-family:'Playfair Display',serif;
+  font-size:clamp(19px,3.5vw,26px); font-weight:900;
+  color:var(--cream); margin-bottom:8px; line-height:1.1;
+}
+.tl-event-desc {
+  font-family:'Noto Serif JP',serif; font-weight:300;
+  font-size:clamp(12px,1.8vw,14px); color:var(--dim); line-height:1.9;
+}
+.tl-tag {
+  display:inline-block; margin-top:10px; font-size:9px;
+  letter-spacing:3px; text-transform:uppercase;
+  border:1px solid rgba(255,45,85,0.25); padding:4px 10px;
+  border-radius:20px; color:rgba(255,45,85,0.6);
+}
+
+/* COUNTER */
+.tl-counter-section {
+  position:relative; z-index:1;
+  max-width:760px; margin:20px auto 0; padding:0 24px 40px;
+}
+.tl-counter-card {
+  border:1px solid rgba(255,45,85,0.3);
+  background:rgba(255,255,255,0.02); padding:50px 32px;
+  text-align:center; backdrop-filter:blur(10px); position:relative; overflow:hidden;
+}
+.tl-counter-card::before {
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background:radial-gradient(ellipse at 50% 0%, rgba(255,45,85,0.08), transparent 60%);
+}
+.counter-eyebrow {
+  font-size:11px; letter-spacing:6px; color:rgba(255,45,85,0.5);
+  text-transform:uppercase; margin-bottom:20px; font-family:'Noto Serif JP',serif;
+}
+.counter-num {
+  font-family:'Playfair Display',serif; font-weight:900;
+  font-size:clamp(72px,16vw,140px); color:var(--red);
+  line-height:1; display:block;
+  text-shadow:0 0 60px rgba(255,45,85,0.4);
+}
+.counter-label {
+  font-family:'Noto Serif JP',serif; font-weight:300;
+  font-size:clamp(14px,2.5vw,20px); color:var(--dim);
+  letter-spacing:4px; margin:8px 0 32px; display:block;
+}
+.counter-substats {
+  display:flex; border:1px solid rgba(255,45,85,0.15);
+  max-width:400px; margin:0 auto 0; overflow:hidden;
+}
+.cs { flex:1; padding:16px 8px; border-right:1px solid rgba(255,45,85,0.15); text-align:center; }
+.cs:last-child { border-right:none; }
+.cs-n { font-family:'Playfair Display',serif; font-size:24px; font-weight:900; color:var(--cream); display:block; }
+.cs-l { font-size:9px; letter-spacing:3px; color:var(--dim); text-transform:uppercase; margin-top:4px; display:block; }
+
+/* HEART FINALE */
+.heart-finale {
+  position:relative; z-index:1;
+  text-align:center; padding:60px 20px 100px;
+}
+.finale-waiting {
+  font-family:'Playfair Display',serif; font-style:italic;
+  font-size:clamp(20px,4.5vw,38px); color:var(--dim);
+  margin-bottom:44px; line-height:1.6;
+}
+.finale-waiting .red { color:var(--red); font-style:normal; }
+
+.big-heart-wrap {
+  display:inline-block; position:relative;
+  animation:bigbeat 1.2s ease-in-out infinite;
+  filter:drop-shadow(0 0 30px rgba(255,45,85,.7)) drop-shadow(0 0 80px rgba(255,45,85,.3));
+}
+@keyframes bigbeat {
+  0%,100%{ transform:scale(1); }
+  15%{ transform:scale(1.18); }
+  30%{ transform:scale(1); }
+  45%{ transform:scale(1.10); }
+}
+.big-heart-wrap svg { width:min(180px,44vw); height:auto; }
+
+.finale-text {
+  margin-top:36px;
+  font-family:'Noto Serif JP',serif; font-weight:300;
+  font-size:clamp(13px,2.5vw,17px); color:var(--dim);
+  letter-spacing:3px; line-height:2.2;
+}
+.finale-big {
+  font-family:'Playfair Display',serif; font-style:italic;
+  font-size:clamp(22px,5vw,40px); color:var(--cream);
+  display:block; margin-top:14px;
+}
+
+/* petal burst */
+.petal {
+  position:fixed; pointer-events:none; z-index:2; font-size:14px;
+  animation:petalDrift linear forwards;
+}
+@keyframes petalDrift {
+  0%  { opacity:0; transform:translate(0,0) rotate(0deg) scale(.6); }
+  8%  { opacity:.9; }
+  100%{ opacity:0; transform:translate(var(--dx),var(--dy)) rotate(var(--dr)) scale(1.3); }
+}
+
+/* floating JP chars */
+.jp-float {
+  position:fixed; pointer-events:none; z-index:0;
+  font-family:'Noto Serif JP',serif; font-weight:300;
+  color:rgba(255,45,85,0.05); user-select:none;
+  animation:jpDrift linear infinite;
+}
+@keyframes jpDrift {
+  0%  { transform:translateY(110vh) rotate(0deg); opacity:0; }
+  5%  { opacity:1; }
+  95% { opacity:.4; }
+  100%{ transform:translateY(-15vh) rotate(15deg); opacity:0; }
+}
+</style>
+</head>
+<body>
+<canvas id="stars-canvas"></canvas>
+<canvas id="sakura-canvas"></canvas>
+
+<nav class="site-nav">
+  <a href="index.html" class="nav-logo">for varya ✦</a>
+  <div class="nav-links">
+    <a href="index.html" class="nav-link">Главная</a>
+    <a href="valentine.html" class="nav-link">Валентинка</a>
+    <a href="map.html" class="nav-link">Карта</a>
+    <a href="timeline.html" class="nav-link active">История</a>
+    <a href="gallery.html" class="nav-link">Галерея</a>
+    <a href="letter.html" class="nav-link">Письмо</a>
+  </div>
+</nav>
+
+<div class="page-content">
+
+  <div class="tl-hero">
+    <span class="tl-kanji">愛 · 時間 · 記憶</span>
+    <div class="tl-eyebrow">03 · наша история</div>
+    <h1 class="tl-title">История <span class="red">❤</span></h1>
+    <div class="tl-subtitle">с самого начала</div>
+    <div class="days-badge">
+      <span class="days-badge-num" id="totalDaysBadge">—</span>
+      <span class="days-badge-label">день как<br>мы вместе</span>
+    </div>
+  </div>
+
+  <div class="tl-container">
+    <div class="tl-spine"></div>
+
+    <!-- 1 -->
+    <div class="tl-item">
+      <div class="tl-card">
+        <div class="tl-date">2 февраля 2024</div>
+        <div class="tl-card-box">
+          <div class="tl-event-title">Первое сообщение</div>
+          <div class="tl-event-desc">Всё начинается с одного сообщения.<br>Никто не знал, что это изменит всё.</div>
+          <span class="tl-tag">✦ начало</span>
+        </div>
+      </div>
+      <div class="tl-node">
+        <div class="tl-dot"></div>
+        <div class="tl-icon">💬</div>
+      </div>
+      <div class="tl-empty"></div>
+    </div>
+
+    <!-- 2 -->
+    <div class="tl-item">
+      <div class="tl-empty"></div>
+      <div class="tl-node">
+        <div class="tl-dot"></div>
+        <div class="tl-icon">🌸</div>
+      </div>
+      <div class="tl-card">
+        <div class="tl-date">16 августа 2025</div>
+        <div class="tl-card-box">
+          <div class="tl-event-title">Начало отношений</div>
+          <div class="tl-event-desc">День, который я запомню навсегда.<br>Теперь мы — это мы.</div>
+          <span class="tl-tag">❤ главное</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3 — today -->
+    <div class="tl-item">
+      <div class="tl-card">
+        <div class="tl-date" id="todayDate"></div>
+        <div class="tl-card-box">
+          <div class="tl-event-title">Сегодня</div>
+          <div class="tl-event-desc">Продолжаем писать нашу историю.<br>Каждый день — новая страница.</div>
+          <span class="tl-tag">✨ сейчас</span>
+        </div>
+      </div>
+      <div class="tl-node">
+        <div class="tl-dot big"></div>
+        <div class="tl-icon">🌟</div>
+      </div>
+      <div class="tl-empty"></div>
+    </div>
+
+  </div>
+
+  <!-- COUNTER -->
+  <div class="tl-counter-section">
+    <div class="tl-counter-card">
+      <div class="counter-eyebrow">❤ · мы вместе</div>
+      <span class="counter-num" id="daysCounter">0</span>
+      <span class="counter-label">дней вместе</span>
+      <div class="counter-substats">
+        <div class="cs"><span class="cs-n" id="hoursN">0</span><span class="cs-l">часов</span></div>
+        <div class="cs"><span class="cs-n" id="weeksN">0</span><span class="cs-l">недель</span></div>
+        <div class="cs"><span class="cs-n" id="monthsN">0</span><span class="cs-l">месяцев</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HEART FINALE -->
+  <div class="heart-finale">
+    <p class="finale-waiting">
+      Жду нашей следующей<br>
+      <span class="red">встречи</span> с тобой
+    </p>
+    <div class="big-heart-wrap" id="bigHeart">
+      <svg viewBox="0 0 200 180" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="hg" cx="50%" cy="40%">
+            <stop offset="0%" stop-color="#ff6b9d"/>
+            <stop offset="100%" stop-color="#ff2d55"/>
+          </radialGradient>
+        </defs>
+        <path d="M100,162 C100,162 14,105 14,52 C14,24 34,6 58,6 C74,6 90,16 100,30 C110,16 126,6 142,6 C166,6 186,24 186,52 C186,105 100,162 100,162Z" fill="url(#hg)" opacity="0.95"/>
+        <ellipse cx="72" cy="42" rx="18" ry="12" fill="rgba(255,255,255,0.18)" transform="rotate(-30,72,42)"/>
+      </svg>
+    </div>
+    <div class="finale-text">
+      каждый день — это ещё один день ближе к тебе
+      <span class="finale-big">Варя ❤</span>
+    </div>
+  </div>
+
+</div>
+
+<script src="shared.js"></script>
+<script>
+// DATES
+const START = new Date('2025-08-16');
+const TODAY = new Date(); TODAY.setHours(0,0,0,0);
+const diffDays   = Math.max(0, Math.floor((TODAY - START) / 86400000));
+const diffWeeks  = Math.floor(diffDays / 7);
+const diffMonths = Math.floor(diffDays / 30.44);
+const diffHours  = diffDays * 24;
+
+document.getElementById('totalDaysBadge').textContent = diffDays;
+const mo = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+document.getElementById('todayDate').textContent = TODAY.getDate()+' '+mo[TODAY.getMonth()]+' '+TODAY.getFullYear();
+
+// COUNTER ANIM
+function animCount(el, target, dur=1800){
+  let s=null;
+  const step=ts=>{ if(!s)s=ts; const p=Math.min((ts-s)/dur,1); const e=1-Math.pow(1-p,3);
+    el.textContent=Math.floor(e*target).toLocaleString('ru'); if(p<1)requestAnimationFrame(step); else el.textContent=target.toLocaleString('ru'); };
+  requestAnimationFrame(step);
+}
+new IntersectionObserver((entries,obs)=>{ if(entries[0].isIntersecting){ obs.disconnect();
+  animCount(document.getElementById('daysCounter'), diffDays, 2000);
+  animCount(document.getElementById('hoursN'),  diffHours,  1600);
+  animCount(document.getElementById('weeksN'),  diffWeeks,  1400);
+  animCount(document.getElementById('monthsN'), diffMonths, 1200);
+}},{ threshold:0.3 }).observe(document.getElementById('daysCounter'));
+
+// SCROLL REVEAL
+new IntersectionObserver((entries)=>{ entries.forEach((e,i)=>{ if(e.isIntersecting) setTimeout(()=>e.target.classList.add('visible'),i*100); }); },
+  { threshold:0.15 }).observe || null;
+const ro = new IntersectionObserver(entries=>entries.forEach((e,i)=>{ if(e.isIntersecting) setTimeout(()=>e.target.classList.add('visible'),i*80); }),{threshold:0.15});
+document.querySelectorAll('.tl-item').forEach(el=>ro.observe(el));
+
+// SAKURA CANVAS
+const sc=document.getElementById('sakura-canvas'); const sCtx=sc.getContext('2d');
+function rsz(){ sc.width=window.innerWidth; sc.height=window.innerHeight; }
+rsz(); window.addEventListener('resize',rsz);
+const PE=['🌸','🌸','🌸','🌺','✿']; const petals=[];
+for(let i=0;i<30;i++) petals.push({ x:Math.random()*sc.width, y:-Math.random()*sc.height, size:10+Math.random()*14, speed:.4+Math.random()*1.1, drift:(Math.random()-.5)*.7, spin:(Math.random()-.5)*2, rot:Math.random()*360, emoji:PE[Math.floor(Math.random()*PE.length)], op:.35+Math.random()*.45 });
+function drawSakura(){
+  sCtx.clearRect(0,0,sc.width,sc.height);
+  petals.forEach(p=>{ sCtx.save(); sCtx.globalAlpha=p.op*(0.6+0.4*Math.sin(Date.now()*.001+p.x)); sCtx.font=p.size+'px serif'; sCtx.translate(p.x,p.y); sCtx.rotate(p.rot*Math.PI/180); sCtx.fillText(p.emoji,-p.size/2,p.size/2); sCtx.restore(); p.y+=p.speed; p.x+=p.drift; p.rot+=p.spin; if(p.y>sc.height+20){p.y=-20;p.x=Math.random()*sc.width;} });
+  requestAnimationFrame(drawSakura);
+}
+drawSakura();
+
+// FLOATING JP CHARS
+const JP=['愛','恋','幸','美','心','想','夢','縁'];
+function spawnJP(){ const el=document.createElement('div'); el.className='jp-float'; el.textContent=JP[Math.floor(Math.random()*JP.length)]; const d=18+Math.random()*14; el.style.cssText=`left:${5+Math.random()*90}vw;font-size:${40+Math.random()*60}px;animation-duration:${d}s;`; document.body.appendChild(el); setTimeout(()=>el.remove(),d*1000+200); }
+for(let i=0;i<6;i++) setTimeout(()=>spawnJP(),i*2800);
+setInterval(spawnJP,5000);
+
+// HEART BURST PETALS
+function burstPetals(){ const rect=document.getElementById('bigHeart').getBoundingClientRect(); const cx=rect.left+rect.width/2; const cy=rect.top+rect.height/2; const em=['🌸','💕','✨','❤️','🩷','💫']; for(let i=0;i<10;i++){ const el=document.createElement('div'); el.className='petal'; el.textContent=em[Math.floor(Math.random()*em.length)]; const a=Math.random()*Math.PI*2; const d=60+Math.random()*130; const dur=1.2+Math.random()*.8; el.style.cssText=`left:${cx}px;top:${cy}px;--dx:${Math.cos(a)*d}px;--dy:${Math.sin(a)*d-40}px;--dr:${(Math.random()-.5)*180}deg;animation-duration:${dur}s;`; document.body.appendChild(el); setTimeout(()=>el.remove(),dur*1000+100); } }
+new IntersectionObserver((e,o)=>{ if(e[0].isIntersecting){ o.disconnect(); burstPetals(); setInterval(burstPetals,3500); } },{threshold:0.5}).observe(document.getElementById('bigHeart'));
+</script>
+</body>
+</html>

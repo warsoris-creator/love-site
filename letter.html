@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Письмо ✦ для Вари</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+.coming-soon { gap:28px; }
+.coming-icon { animation:float 3s ease-in-out infinite; }
+@keyframes float { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-12px);} }
+.coming-num { font-size:10px; letter-spacing:5px; color:rgba(255,45,85,0.4); text-transform:uppercase; }
+.coming-back {
+  margin-top:20px; font-size:11px; letter-spacing:3px; color:var(--dim);
+  text-transform:uppercase; text-decoration:none;
+  border:1px solid var(--border); padding:12px 28px;
+  transition:all 0.2s; display:inline-block;
+}
+.coming-back:hover { border-color:var(--red); color:var(--cream); }
+</style>
+</head>
+<body>
+<canvas id="stars-canvas"></canvas>
+<nav class="site-nav">
+  <a href="index.html" class="nav-logo">for varya ✦</a>
+  <div class="nav-links">
+    <a href="index.html" class="nav-link">Главная</a>
+    <a href="valentine.html" class="nav-link">Валентинка</a>
+    <a href="map.html" class="nav-link">Карта</a>
+    <a href="timeline.html" class="nav-link">История</a>
+    <a href="gallery.html" class="nav-link">Галерея</a>
+    <a href="letter.html" class="nav-link active">Письмо</a>
+  </div>
+</nav>
+<div class="page-content">
+  <div class="coming-soon">
+    <div class="coming-num">05 · раздел</div>
+    <div class="coming-icon">✉️</div>
+    <h1 class="coming-title">Письмо</h1>
+    <p style="font-family:'Playfair Display',serif;font-style:italic;color:var(--dim);font-size:clamp(14px,2.5vw,18px);text-align:center;max-width:400px;line-height:1.7;">То, что сложно сказать вслух — написано здесь</p>
+    <div class="coming-hint">✦ &nbsp;письмо уже пишется&nbsp; ✦</div>
+    <div class="coming-dot"></div>
+    <a href="index.html" class="coming-back">← на главную</a>
+  </div>
+</div>
+<script src="shared.js"></script>
+</body>
+</html>
