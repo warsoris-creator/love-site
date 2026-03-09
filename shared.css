@@ -120,3 +120,13 @@ body {
 .btn-outline:hover { background:var(--red); color:var(--cream); }
 
 /* SHARED STARS + CURSOR JS snippet */
+
+/* ── PAGE TRANSITION VEIL (shared) ── */
+#page-veil {
+  position:fixed; inset:0; z-index:9999; pointer-events:none;
+  background:radial-gradient(ellipse at center, #160810 0%, #04010e 100%);
+  opacity:1;
+  transition:opacity 0.55s ease;
+}
+#page-veil.out { opacity:0; pointer-events:none; }
+#page-veil.in  { opacity:1; pointer-events:all; }

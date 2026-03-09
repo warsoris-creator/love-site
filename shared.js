@@ -313,3 +313,48 @@
   });
 
 })();
+
+/* ═══════════════════════════════════════
+   PAGE TRANSITIONS — universal
+   Works on every page that includes shared.js
+   Veil fades out on entry, fades in on nav-link clicks
+═══════════════════════════════════════ */
+(function(){
+  // Inject veil on every page (if not already there)
+  if(!document.getElementById('page-veil')){
+    const v = document.createElement('div');
+    v.id = 'page-veil';
+    v.style.cssText = 'position:fixed;inset:0;z-index:9999;pointer-events:all;background:radial-gradient(ellipse at center,#160810 0%,#04010e 100%);opacity:1;transition:opacity 0.6s ease;';
+    document.body.prepend(v);
+  }
+
+  // Fade the veil OUT when page loads
+  window.addEventListener('load', ()=>{
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      const v = document.getElementById('page-veil');
+      if(v){ v.style.opacity='0'; v.style.pointerEvents='none'; }
+    }));
+  });
+
+  // Intercept all internal link clicks → fade veil IN → navigate
+  document.addEventListener('click', e=>{
+    const a = e.target.closest('a[href]');
+    if(!a) return;
+    const href = a.getAttribute('href');
+    // only intercept same-origin relative links (not # anchors, not external)
+    if(!href || href.startsWith('#') || href.startsWith('http') || href.startsWith('mailto')) return;
+    // skip if already handled inline (e.g. index.html navigate())
+    if(a.getAttribute('onclick') && a.getAttribute('onclick').includes('navigate')) return;
+
+    e.preventDefault();
+    if(window.SFX) window.SFX.click();
+    const v = document.getElementById('page-veil');
+    if(v){
+      v.style.pointerEvents='all';
+      v.style.opacity='1';
+      setTimeout(()=>{ window.location.href = href; }, 560);
+    } else {
+      window.location.href = href;
+    }
+  }, true);
+})();
