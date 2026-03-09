@@ -123,8 +123,9 @@
 
 /* ── 3. STARS + CURSOR ── */
 (function(){
-  /* cursor dot */
-  if(!document.querySelector('.cursor')){
+  /* cursor dot — только на десктопе */
+  const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+  if(!isTouchDevice && !document.querySelector('.cursor')){
     const cur = document.createElement('div');
     cur.className = 'cursor';
     document.body.appendChild(cur);
@@ -211,14 +212,14 @@
 })();
 
 
-/* ── 4. SFX + AMBIENT ── */
+/* ── 4. SFX — звуки UI без ambient ── */
 (function(){
-  let ac=null, master=null, unlocked=false, ambStarted=false;
+  let ac=null, master=null, unlocked=false;
 
   function getAC(){
     if(!ac){
       ac=new(window.AudioContext||window.webkitAudioContext)();
-      master=ac.createGain(); master.gain.value=0.45;
+      master=ac.createGain(); master.gain.value=0.4;
       master.connect(ac.destination);
     }
     return ac;
@@ -227,99 +228,51 @@
   function unlock(){
     if(unlocked) return; unlocked=true;
     getAC();
-    const resume=()=>{ if(ac.state==='suspended') ac.resume(); };
-    resume();
-    ac.addEventListener('statechange', resume);
-    // ambient disabled
+    if(ac.state==='suspended') ac.resume();
   }
 
-  function startAmbient(){ /* ambient disabled */ }
-
-  /* ── sound primitives ── */
-  function safe(fn){ try{ if(!unlocked||!ac||ac.state==='suspended') return; fn(); }catch(e){} }
+  function safe(fn){ try{ if(!ac) return; fn(); }catch(e){} }
 
   function hover(){ safe(()=>{
+    if(ac.state==='suspended') return;
     const o=ac.createOscillator(),g=ac.createGain();
     o.type='sine'; o.frequency.setValueAtTime(860,ac.currentTime);
     o.frequency.exponentialRampToValueAtTime(1200,ac.currentTime+0.1);
-    g.gain.setValueAtTime(0.048,ac.currentTime);
+    g.gain.setValueAtTime(0.04,ac.currentTime);
     g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+0.16);
     o.connect(g);g.connect(master);o.start();o.stop(ac.currentTime+0.18);
   });}
 
   function click(){ safe(()=>{
+    if(ac.state==='suspended') return;
     [523.25,659.25].forEach((f,i)=>{
       const o=ac.createOscillator(),g=ac.createGain();
       o.type='triangle'; o.frequency.value=f;
       const t=ac.currentTime+i*.05;
-      g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(0.11,t+.01);
+      g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(0.08,t+.01);
       g.gain.exponentialRampToValueAtTime(.001,t+.42);
       o.connect(g);g.connect(master);o.start(t);o.stop(t+.45);
     });
   });}
 
-  function crack(){ safe(()=>{
-    const buf=ac.createBuffer(1,Math.floor(ac.sampleRate*.1),ac.sampleRate);
-    const d=buf.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1);
-    const src=ac.createBufferSource(); src.buffer=buf;
-    const bpf=ac.createBiquadFilter(); bpf.type='bandpass'; bpf.frequency.value=2800; bpf.Q.value=1.6;
-    const g=ac.createGain(); g.gain.setValueAtTime(.2,ac.currentTime);
-    g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+.12);
-    src.connect(bpf);bpf.connect(g);g.connect(master);src.start();src.stop(ac.currentTime+.13);
-    setTimeout(()=>chime([830,1046,1318],.07),100);
-  });}
-
-  function chime(freqs=[523,659,784,1046],vol=.09){ safe(()=>{
+  function chime(freqs=[523,659],vol=.07){ safe(()=>{
+    if(ac.state==='suspended') return;
     freqs.forEach((f,i)=>{
       const o=ac.createOscillator(),g=ac.createGain();
       o.type='sine'; o.frequency.value=f;
       const t=ac.currentTime+i*.08;
       g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(vol,t+.025);
-      g.gain.exponentialRampToValueAtTime(.001,t+1.4);
-      o.connect(g);g.connect(master);o.start(t);o.stop(t+1.5);
+      g.gain.exponentialRampToValueAtTime(.001,t+1.2);
+      o.connect(g);g.connect(master);o.start(t);o.stop(t+1.3);
     });
   });}
 
-  function heartbeat(){ safe(()=>{
-    [0,.21].forEach(delay=>{
-      const o=ac.createOscillator(),g=ac.createGain(); o.type='sine';
-      o.frequency.setValueAtTime(65,ac.currentTime+delay);
-      o.frequency.exponentialRampToValueAtTime(28,ac.currentTime+delay+.18);
-      g.gain.setValueAtTime(.3,ac.currentTime+delay);
-      g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+delay+.22);
-      o.connect(g);g.connect(master);o.start(ac.currentTime+delay);o.stop(ac.currentTime+delay+.25);
-    });
-  });}
-
-  function whoosh(){ safe(()=>{
-    const len=Math.floor(ac.sampleRate*.5);
-    const buf=ac.createBuffer(1,len,ac.sampleRate);
-    const d=buf.getChannelData(0);
-    for(let i=0;i<len;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/len,1.4);
-    const src=ac.createBufferSource(); src.buffer=buf;
-    const lpf=ac.createBiquadFilter(); lpf.type='lowpass'; lpf.frequency.value=800;
-    const g=ac.createGain();
-    g.gain.setValueAtTime(0,ac.currentTime); g.gain.linearRampToValueAtTime(.13,ac.currentTime+.08);
-    g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+.5);
-    src.connect(lpf);lpf.connect(g);g.connect(master);src.start();src.stop(ac.currentTime+.55);
-  });}
-
-  function pageOpen(){ safe(()=>{
-    [130.8,164.8,196,246.9].forEach((f,i)=>{
-      const o=ac.createOscillator(),g=ac.createGain(); o.type='sine'; o.frequency.value=f;
-      const t=ac.currentTime+i*.16;
-      g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.07,t+.2);
-      g.gain.exponentialRampToValueAtTime(.001,t+2.2);
-      o.connect(g);g.connect(master);o.start(t);o.stop(t+2.5);
-    });
-  });}
+  function crack(){} function heartbeat(){} function whoosh(){} 
+  function pageOpen(){} function startAmbient(){}
 
   ['click','touchstart','keydown'].forEach(ev=>
     document.addEventListener(ev, unlock, {once:true, passive:true})
   );
-
-  // first-click page swell
-  document.addEventListener('click', ()=>{ if(window.SFX) window.SFX.pageOpen(); }, {once:true});
 
   window.SFX = { hover, click, crack, chime, heartbeat, whoosh, pageOpen, unlock, startAmbient };
 })();

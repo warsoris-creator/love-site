@@ -188,6 +188,22 @@ body { overflow-x:hidden; }
 .music-quote q { font-family:'Playfair Display',serif; font-style:italic; font-size:clamp(12px,2.2vw,15px); color:rgba(255,240,245,0.2); line-height:1.9; }
 
 @keyframes fadeUp { from{opacity:0;transform:translateY(14px);} to{opacity:1;transform:translateY(0);} }
+
+/* ── PLAY ICON ── */
+.ctrl-play .icon-play,
+.ctrl-play .icon-pause { display:flex; align-items:center; justify-content:center; }
+.ctrl-play .icon-pause { gap:5px; }
+.ctrl-play .icon-pause span {
+  display:block; width:4px; height:20px;
+  background:var(--cream); border-radius:2px;
+}
+.ctrl-play .icon-play {
+  width:0; height:0;
+  border-style:solid;
+  border-width:10px 0 10px 18px;
+  border-color:transparent transparent transparent var(--cream);
+  margin-left:4px;
+}
 </style>
 </head>
 <body>
@@ -200,7 +216,7 @@ body { overflow-x:hidden; }
   <div class="nav-links"></div>
 </nav>
 
-<audio id="audioEl" preload="auto" src="sound1.mp3"></audio>
+<audio id="audioEl" preload="auto" src="sound1.mp3" preload="none"></audio>
 
 <div class="music-page">
 
@@ -256,7 +272,9 @@ body { overflow-x:hidden; }
 
   <div class="controls">
     <button class="ctrl-btn" onclick="rewind()" title="−15 сек">⟨⟨</button>
-    <button class="ctrl-play" id="playBtn" onclick="togglePlay()">▶</button>
+    <button class="ctrl-play" id="playBtn" onclick="togglePlay()">
+  <div class="icon-play" id="playIcon"></div>
+</button>
     <button class="ctrl-btn" onclick="forward()" title="+15 сек">⟩⟩</button>
   </div>
 
@@ -323,14 +341,14 @@ function setPlaying(state) {
     vinylWrap.classList.add('playing');
     vizWrap.classList.add('active');
     glow.classList.add('playing');
-    playBtn.innerHTML = '⏸';
+    document.getElementById('playIcon').outerHTML = '<div class="icon-pause" id="playIcon"><span></span><span></span></div>';
     playBtn.classList.add('playing');
   } else {
     vinyl.classList.remove('spinning');
     vinylWrap.classList.remove('playing');
     vizWrap.classList.remove('active');
     glow.classList.remove('playing');
-    playBtn.innerHTML = '▶';
+    document.getElementById('playIcon').outerHTML = '<div class="icon-play" id="playIcon"></div>';
     playBtn.classList.remove('playing');
   }
 }
