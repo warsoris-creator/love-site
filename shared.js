@@ -312,6 +312,60 @@
     el.addEventListener('click',      ()=> window.SFX && window.SFX.click());
   });
 
+  /* ── HAMBURGER MENU (mobile ≤700px) ── */
+  const siteNav = document.querySelector('.site-nav');
+  if(siteNav){
+    // inject burger button into nav
+    const burger = document.createElement('button');
+    burger.className = 'nav-burger';
+    burger.setAttribute('aria-label','Меню');
+    burger.innerHTML = '<span></span><span></span><span></span>';
+    siteNav.appendChild(burger);
+
+    // build drawer with all pages
+    const currentPage = location.pathname.split('/').pop() || 'index.html';
+    const pages = [
+      ['index.html',    'Главная',    false],
+      ['valentine.html','Валентинка', false],
+      ['map.html',      'Карта',      false],
+      ['timeline.html', 'История',    false],
+      ['gallery.html',  'Галерея',    true],
+      ['letter.html',   'Письмо',     true],
+    ];
+    const drawer = document.createElement('div');
+    drawer.className = 'nav-drawer';
+    drawer.innerHTML = pages.map(([href,label,lock])=>
+      `<a href="${href}" class="${currentPage===href?'active':''} ${lock?'locked':''}">${label}</a>`
+    ).join('') + '<div class="nav-drawer-sig">for varya ✦</div>';
+    document.body.appendChild(drawer);
+
+    function toggleMenu(open){
+      if(open === undefined) open = !burger.classList.contains('open');
+      burger.classList.toggle('open', open);
+      drawer.classList.toggle('open', open);
+      document.body.style.overflow = open ? 'hidden' : '';
+    }
+
+    burger.addEventListener('click', ()=>{
+      if(window.SFX) window.SFX.click();
+      toggleMenu();
+    });
+    drawer.addEventListener('click', e=>{ if(e.target===drawer) toggleMenu(false); });
+    document.addEventListener('keydown', e=>{ if(e.key==='Escape') toggleMenu(false); });
+
+    // drawer link clicks → sound + close + navigate
+    drawer.querySelectorAll('a:not(.locked)').forEach(a=>{
+      a.addEventListener('click', e=>{
+        e.preventDefault();
+        if(window.SFX) window.SFX.click();
+        toggleMenu(false);
+        const href = a.getAttribute('href');
+        // give drawer time to close before navigating
+        setTimeout(()=>{ window.location.href = href; }, 320);
+      });
+    });
+  }
+
 })();
 
 /* ═══════════════════════════════════════
