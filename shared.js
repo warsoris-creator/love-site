@@ -315,46 +315,75 @@
 })();
 
 /* ═══════════════════════════════════════
-   PAGE TRANSITIONS — universal
-   Works on every page that includes shared.js
-   Veil fades out on entry, fades in on nav-link clicks
+   PAGE TRANSITIONS — smooth cross-fade
+   Uses View Transitions API (Chrome 111+)
+   Falls back to manual veil on other browsers
 ═══════════════════════════════════════ */
 (function(){
-  // Inject veil on every page (if not already there)
-  if(!document.getElementById('page-veil')){
-    const v = document.createElement('div');
-    v.id = 'page-veil';
-    v.style.cssText = 'position:fixed;inset:0;z-index:9999;pointer-events:all;background:radial-gradient(ellipse at center,#160810 0%,#04010e 100%);opacity:1;transition:opacity 0.6s ease;';
-    document.body.prepend(v);
+  // ── inject veil div (all pages)
+  let veil = document.getElementById('page-veil');
+  if(!veil){
+    veil = document.createElement('div');
+    veil.id = 'page-veil';
+    veil.style.cssText = [
+      'position:fixed','inset:0','z-index:9999',
+      'pointer-events:all',
+      'background:radial-gradient(ellipse at center,#160810 0%,#04010e 100%)',
+      'opacity:1',
+      'transition:opacity 0.6s cubic-bezier(0.4,0,0.2,1)'
+    ].join(';');
+    document.body.prepend(veil);
   }
 
-  // Fade the veil OUT when page loads
-  window.addEventListener('load', ()=>{
+  // ── fade OUT on entry (every page)
+  function fadeIn(){
     requestAnimationFrame(()=>requestAnimationFrame(()=>{
-      const v = document.getElementById('page-veil');
-      if(v){ v.style.opacity='0'; v.style.pointerEvents='none'; }
+      veil.style.opacity = '0';
+      veil.style.pointerEvents = 'none';
     }));
-  });
+  }
+  if(document.readyState === 'complete') fadeIn();
+  else window.addEventListener('load', fadeIn);
 
-  // Intercept all internal link clicks → fade veil IN → navigate
+  // ── intercept clicks on internal links
   document.addEventListener('click', e=>{
     const a = e.target.closest('a[href]');
     if(!a) return;
     const href = a.getAttribute('href');
-    // only intercept same-origin relative links (not # anchors, not external)
-    if(!href || href.startsWith('#') || href.startsWith('http') || href.startsWith('mailto')) return;
-    // skip if already handled inline (e.g. index.html navigate())
-    if(a.getAttribute('onclick') && a.getAttribute('onclick').includes('navigate')) return;
+    if(!href || href.startsWith('#') || href.startsWith('http') || href.startsWith('mailto') || href.startsWith('javascript')) return;
+    // skip if there's an inline navigate() call already
+    const oc = a.getAttribute('onclick')||'';
+    if(oc.includes('navigate(')) return;
 
     e.preventDefault();
+    e.stopPropagation();
     if(window.SFX) window.SFX.click();
-    const v = document.getElementById('page-veil');
-    if(v){
-      v.style.pointerEvents='all';
-      v.style.opacity='1';
-      setTimeout(()=>{ window.location.href = href; }, 560);
+
+    // Try View Transitions API first (Chrome 111+)
+    if(document.startViewTransition){
+      document.startViewTransition(()=>{
+        window.location.href = href;
+      });
     } else {
-      window.location.href = href;
+      // Manual veil fallback
+      veil.style.pointerEvents = 'all';
+      veil.style.opacity = '1';
+      setTimeout(()=>{ window.location.href = href; }, 580);
     }
   }, true);
+
+  // ── also handle inline navigate() calls from index.html
+  window.navigate = function(e, el){
+    e.preventDefault();
+    e.stopPropagation();
+    const href = el.getAttribute('href');
+    if(window.SFX) window.SFX.click();
+    if(document.startViewTransition){
+      document.startViewTransition(()=>{ window.location.href = href; });
+    } else {
+      veil.style.pointerEvents = 'all';
+      veil.style.opacity = '1';
+      setTimeout(()=>{ window.location.href = href; }, 580);
+    }
+  };
 })();
