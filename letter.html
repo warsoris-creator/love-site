@@ -157,8 +157,6 @@ body { overflow-x:hidden; }
 .ctrl-play:hover { border-color:rgba(255,45,85,0.75); box-shadow:0 0 28px rgba(255,45,85,0.22); transform:scale(1.06); }
 .ctrl-play.playing { background:rgba(255,45,85,0.14); border-color:rgba(255,45,85,0.65); }
 
-/* ── NO FILE ── */
-
 
 
 /* ── SPOTIFY ── */
@@ -203,7 +201,6 @@ body { overflow-x:hidden; }
 </nav>
 
 <audio id="audioEl" preload="auto" src="sound1.mp3"></audio>
-
 
 <div class="music-page">
 
@@ -292,96 +289,105 @@ const vinylWrap = document.getElementById('vinylWrap');
 const playBtn   = document.getElementById('playBtn');
 const vizWrap   = document.getElementById('vizWrap');
 const glow      = document.getElementById('playerGlow');
-const noFile    = document.getElementById('noFileHint');
-let hasFile=true, playing=false;
+let playing = false;
 
-
-  audio.addEventListener('canplay',()=>{ if(!playing) startPlay(); },{once:true});
+audio.addEventListener('loadedmetadata', function() {
+  document.getElementById('timeDuration').textContent = fmt(audio.duration);
 });
 
-/* ── PLAY/PAUSE ── */
-function togglePlay(){
-  // resume AudioContext если suspended (нужно для браузера)
-  if(window.SFX) window.SFX.unlock();
-  // небольшой таймаут чтобы AudioContext успел resume
-  setTimeout(()=>{
-    playing ? pausePlay() : startPlay();
-  }, 50);
-}
-function startPlay(){
-  audio.play().catch(()=>{});
-  playing=true;
-  vinyl.classList.add('spinning');
-  vinylWrap.classList.add('playing');
-  vizWrap.classList.add('active');
-  glow.classList.add('playing');
-  playBtn.innerHTML='⏸'; playBtn.classList.add('playing');
-  if(window.SFX) window.SFX.chime([523,659],0.05);
-}
-function pausePlay(){
-  audio.pause(); playing=false;
-  vinyl.classList.remove('spinning');
-  vinylWrap.classList.remove('playing');
-  vizWrap.classList.remove('active');
-  glow.classList.remove('playing');
-  playBtn.innerHTML='▶'; playBtn.classList.remove('playing');
-}
-function rewind(){ audio.currentTime=Math.max(0,audio.currentTime-15); if(window.SFX) window.SFX.hover(); }
-function forward(){ audio.currentTime=Math.min(audio.duration||0,audio.currentTime+15); if(window.SFX) window.SFX.hover(); }
-
-/* ── PROGRESS ── */
-audio.addEventListener('timeupdate',()=>{
-  if(!audio.duration) return;
-  const pct=(audio.currentTime/audio.duration)*100;
-  document.getElementById('progressFill').style.width=pct+'%';
-  document.getElementById('timeElapsed').textContent=fmt(audio.currentTime);
-});
-audio.addEventListener('ended',()=>{ pausePlay(); document.getElementById('progressFill').style.width='0%'; });
-function seekTo(e){
-  if(!hasFile||!audio.duration) return;
-  audio.currentTime=(e.offsetX/document.getElementById('progressBar').offsetWidth)*audio.duration;
-}
-function fmt(s){
-  if(!s||isNaN(s)) return '0:00';
-  const m=Math.floor(s/60),sec=Math.floor(s%60);
-  return m+':'+(sec<10?'0':'')+sec;
+function togglePlay() {
+  if (playing) {
+    pausePlay();
+  } else {
+    startPlay();
+  }
 }
 
-/* ── HINT PULSE ── */
-function pulseHint(){
-  if(window.SFX) window.SFX.hover();
-  vinyl.style.transition='transform 0.07s';
-  let n=0; const iv=setInterval(()=>{
-    vinyl.style.transform=`rotate(${n%2?-3:3}deg)`;
-    if(++n>5){ clearInterval(iv); vinyl.style.transform=''; vinyl.style.transition=''; }
-  },65);
-}
-
-/* ── FLOATING NOTES ── */
-const NOTES=['♩','♪','♫','♬','🎵','🎶'];
-let noteIv;
-audio.addEventListener('play',()=>{
-  noteIv=setInterval(()=>{
-    const el=document.createElement('div');
-    el.textContent=NOTES[Math.floor(Math.random()*NOTES.length)];
-    const sz=12+Math.random()*10, lx=15+Math.random()*70;
-    el.style.cssText=`position:fixed;left:${lx}vw;bottom:70px;font-size:${sz}px;pointer-events:none;z-index:5;opacity:0;color:rgba(255,107,157,0.65);transition:bottom 2.6s ease-out,opacity 0.4s;`;
-    document.body.appendChild(el);
-    requestAnimationFrame(()=>{
-      el.style.opacity='1'; el.style.bottom=(130+Math.random()*180)+'px';
-      setTimeout(()=>{ el.style.opacity='0'; setTimeout(()=>el.remove(),500); },2100);
+function startPlay() {
+  var p = audio.play();
+  if (p !== undefined) {
+    p.then(function() {
+      setPlaying(true);
+    }).catch(function(e) {
+      console.warn('play blocked:', e);
     });
-  },950);
-});
-audio.addEventListener('pause',()=>clearInterval(noteIv));
-audio.addEventListener('ended',()=>clearInterval(noteIv));
+  } else {
+    setPlaying(true);
+  }
+}
 
-audio.addEventListener('loadedmetadata',()=>{
-  document.getElementById('timeDuration').textContent=fmt(audio.duration);
-});
-audio.addEventListener('error',()=>{ console.warn('Аудио не загрузилось. Убедись что sound1.mp3 лежит рядом с letter.html'); });
+function setPlaying(state) {
+  playing = state;
+  if (state) {
+    vinyl.classList.add('spinning');
+    vinylWrap.classList.add('playing');
+    vizWrap.classList.add('active');
+    glow.classList.add('playing');
+    playBtn.innerHTML = '⏸';
+    playBtn.classList.add('playing');
+  } else {
+    vinyl.classList.remove('spinning');
+    vinylWrap.classList.remove('playing');
+    vizWrap.classList.remove('active');
+    glow.classList.remove('playing');
+    playBtn.innerHTML = '▶';
+    playBtn.classList.remove('playing');
+  }
+}
 
-document.getElementById('spotifyCard').addEventListener('mouseenter',()=>window.SFX&&window.SFX.hover());
+function pausePlay() {
+  audio.pause();
+  setPlaying(false);
+}
+
+function rewind() { audio.currentTime = Math.max(0, audio.currentTime - 15); }
+function forward() { audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 15); }
+
+audio.addEventListener('timeupdate', function() {
+  if (!audio.duration) return;
+  var pct = (audio.currentTime / audio.duration) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('timeElapsed').textContent = fmt(audio.currentTime);
+});
+
+audio.addEventListener('ended', function() {
+  setPlaying(false);
+  document.getElementById('progressFill').style.width = '0%';
+});
+
+function seekTo(e) {
+  if (!audio.duration) return;
+  audio.currentTime = (e.offsetX / document.getElementById('progressBar').offsetWidth) * audio.duration;
+}
+
+function fmt(s) {
+  if (!s || isNaN(s)) return '0:00';
+  var m = Math.floor(s / 60), sec = Math.floor(s % 60);
+  return m + ':' + (sec < 10 ? '0' : '') + sec;
+}
+
+var NOTES = ['♩','♪','♫','♬','🎵','🎶'];
+var noteIv;
+audio.addEventListener('play', function() {
+  noteIv = setInterval(function() {
+    var el = document.createElement('div');
+    el.textContent = NOTES[Math.floor(Math.random() * NOTES.length)];
+    var sz = 12 + Math.random() * 10, lx = 15 + Math.random() * 70;
+    el.style.cssText = 'position:fixed;left:' + lx + 'vw;bottom:70px;font-size:' + sz + 'px;pointer-events:none;z-index:5;opacity:0;color:rgba(255,107,157,0.65);transition:bottom 2.6s ease-out,opacity 0.4s;';
+    document.body.appendChild(el);
+    requestAnimationFrame(function() {
+      el.style.opacity = '1';
+      el.style.bottom = (130 + Math.random() * 180) + 'px';
+      setTimeout(function() { el.style.opacity = '0'; setTimeout(function() { el.remove(); }, 500); }, 2100);
+    });
+  }, 950);
+});
+audio.addEventListener('pause', function() { clearInterval(noteIv); });
+audio.addEventListener('ended', function() { clearInterval(noteIv); });
+
+document.getElementById('spotifyCard').addEventListener('mouseenter', function() {
+  if (window.SFX) window.SFX.hover();
+});
 </script>
 </body>
 </html>
